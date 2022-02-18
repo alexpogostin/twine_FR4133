@@ -12,4 +12,6 @@
 void startXt1Clk(void);
 void startRtcClk(void);
 
+#define RTC_MOD_COUNT 128
+
 #endif
