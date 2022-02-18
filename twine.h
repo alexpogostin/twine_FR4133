@@ -14,10 +14,14 @@
 #define TWINE_H
 
 #include <msp430.h>
+
 #include "clocks.h"
 #include "gpios.h"
 #include "tasks.h"
+#include "uart.h"
+#include "power.h"
 
-#define RTC_MOD_COUNT 128
+#define read_reg_8(x) (*((volatile unsigned char *)((unsigned short)x)))
+#define read_reg_16(x) (*((volatile unsigned short *)((unsigned short)x)))
 
 #endif
