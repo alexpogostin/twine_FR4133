@@ -12,11 +12,22 @@
 void taskManager(void);
 
 static void taskSleep(int);
-static void taskTimeoutLock(short num, short count);
+static void taskTimeoutLock(short task, short count);
+static void taskSuspend(int task);
+static void taskContinue(int task);
+static void taskControl(int task, short control);
 
 static short task_1(void);
 static short task_2(void);
 static short task_3(void);
 static short task_4(void);
+
+#define TASK1 1
+#define TASK2 2
+#define TASK3 3
+#define TASK4 4
+
+#define ENABLE 1
+#define DISABLE 0
 
 #endif
