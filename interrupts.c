@@ -43,16 +43,16 @@ __interrupt void RTCIntervalInterrupt(void)
 
     RTCMOD = RTC_MOD_COUNT;
 
-    if(task_1_status)
+    if(task_1_status == 1)
         task_1_timeout--;
 
-    if(task_2_status)
+    if(task_2_status == 1)
         task_2_timeout--;
 
-    if(task_3_status)
+    if(task_3_status == 1)
         task_3_timeout--;
 
-    if(task_4_status)
+    if(task_4_status == 1)
         task_4_timeout--;
 }
 
@@ -90,7 +90,6 @@ __interrupt void USCIA0Interrupt(void)
         break;
 
         case 0x04: // TX interrupt
-
             if((rxReg >= 0x20) && (rxReg < 0x7f))
             {
                 UCA0TXBUF = rxReg;
