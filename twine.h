@@ -24,5 +24,14 @@
 #define read_reg_8(x) (*((volatile unsigned char *)((unsigned short)x)))
 #define read_reg_16(x) (*((volatile unsigned short *)((unsigned short)x)))
 
+#define MAX_PROG_LINES 32
+#define MAX_PROG_LINE_LEN 32
+
+#define NULL      0x00
+#define BACKSPACE 0x08
+#define LF        0x0A
+#define CR        0x0D
+#define SPACE     0x20
+#define DEL       0x7F
 
 #endif

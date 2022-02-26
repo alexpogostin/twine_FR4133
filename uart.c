@@ -46,4 +46,3 @@ short uartTx(unsigned char (*txStr)[UART_RX_BUF_SIZE], unsigned int node, unsign
 
     return j;
 }
-
