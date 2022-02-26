@@ -50,16 +50,22 @@ static unsigned short task_2_stack[8];
 static unsigned short task_3_stack[8];
 static unsigned short task_4_stack[8];
 
+static unsigned char crlf[]    = "\r\n";
 static unsigned char prompt[]  = "\r\n# ";
-static unsigned char prompt2[] = "\r\n$ ";
+static unsigned char prompt2[] = "n# ";
+static unsigned char line[]    = "\r\n  : ";
+static unsigned char print[]   = "\x01\x01  : ";
 static unsigned char help[]    = "\r\nh: help"
                                  "\r\nv: version"
                                  "\r\ne: edit program"
+                                 "\r\np: print program"
                                  "\r\n--------------------"
-                                 "\r\nl: list program"
                                  "\r\n.: exit program edit";
 static unsigned char version[] = "\r\nv:1.1";
 static unsigned char list[]    = "\r\nlist not implemented";
+
+static short lineNumber;
+static unsigned char program[MAX_PROG_LINES][MAX_PROG_LINE_LEN];
 
 // task_1_status = 0x01 0=!sleeping 1=sleep
 // task_1_status = 0x02 0=!suspended 1=suspended
@@ -494,13 +500,13 @@ short task_1(void)
 {
     unsigned short i = 0;
     unsigned short j = 0;
-    unsigned short k = 0;
+    unsigned int k = 0;
 
     task_1_stack_size = ((taskManager_stack_1 - (unsigned short) __get_SP_register())>>1) + 1;
 
     while(uartRxBuf[j])
     {
-        if(uartRxBuf[j++] == 0x0D)
+        if(uartRxBuf[j++] == CR)
         {
             for(i=0;i<j;i++)
             {
@@ -512,13 +518,25 @@ short task_1(void)
                 {
                     uartTx(uartTxBuf, 0, version);
                 }
+                else if(uartRxBuf[i] == 'p')
+                {
+                    uartTx(uartTxBuf, 0, crlf);
+                    for(k=1;k<lineNumber;k++)
+                    {
+                        binToAscii((char*) print, k);
+                        uartTx(uartTxBuf, 0, print);
+                        uartTx(uartTxBuf, 0, program[k]);
+                    }
+                    break;
+                }
                 else if(uartRxBuf[i] == 'e') // edit thread
                 {
+                    lineNumber = 0;
                     for(k=0;k<UART_RX_BUF_SIZE;k++)
                     {
-                        uartRxBuf[k] = 0x00;
+                        uartRxBuf[k] = NULL;
                     }
-                    uartRxBuf[0] = 0x0D;
+                    uartRxBuf[0] = CR;
                     taskControl(TASK1,DISABLE);
                     taskControl(TASK2,ENABLE);
                     goto exit;
@@ -528,7 +546,7 @@ short task_1(void)
             uartTx(uartTxBuf, 0, prompt);
 
             for(i=0;i<UART_RX_BUF_SIZE;i++)
-                uartRxBuf[i] = 0x00;
+                uartRxBuf[i] = NULL;
         }
     };
 
@@ -547,31 +565,43 @@ short task_2(void)
 
     while(uartRxBuf[j])
     {
-        if(uartRxBuf[j++] == 0x0D)
+        if(uartRxBuf[j++] == CR)
         {
+            for(k=0;k<j;k++)
+            {
+                program[lineNumber][k] = uartRxBuf[k];
+            }
+            program[lineNumber][j] = LF;
+
+            lineNumber++;
+
             for(i=0;i<j;i++)
             {
-                if(uartRxBuf[i] == 'l')
-                {
-                    uartTx(uartTxBuf, 0, list);
-                }
-                else if(uartRxBuf[i] == '.') // exit edit thread
+                if(uartRxBuf[i] == '.') // exit edit thread
                 {
                     for(k=0;k<UART_RX_BUF_SIZE;k++)
                     {
-                        uartRxBuf[k] = 0x00;
+                        uartRxBuf[k] = NULL;
                     }
-                    uartRxBuf[0] = 0x0D;
+
+                    for(k=0;k<MAX_PROG_LINE_LEN;k++)
+                    {
+                        program[lineNumber-1][k] = NULL;
+                    }
+
+                    lineNumber--;
+                    uartRxBuf[0] = CR;
                     taskControl(TASK1,ENABLE);
                     taskControl(TASK2,DISABLE);
                     goto exit;
                 }
             }
 
-            uartTx(uartTxBuf, 0, prompt2);
+            binToAscii((char*) line, lineNumber);
+            uartTx(uartTxBuf, 0, line);
 
             for(i=0;i<UART_RX_BUF_SIZE;i++)
-                uartRxBuf[i] = 0x00;
+                uartRxBuf[i] = NULL;
         }
     };
 
@@ -591,4 +621,23 @@ short task_4(void)
 {
     task_4_stack_size = ((taskManager_stack_4 - (unsigned short) __get_SP_register())>>1) + 1;
     return 0;
+}
+
+/*****************************************************************************/
+char* binToAscii(char* line, short val)
+{
+
+    if(val < 10)
+    {
+        line[2] = ' ';
+        line[3] = (unsigned char) val + 0x30;
+    }
+    else if(val > 9)
+    {
+
+        line[2] = (unsigned char) (val/10) + 0x30;
+        line[3] = (unsigned char) (val - ((val/10) * 10)) + 0x30;
+    }
+
+    return line;
 }

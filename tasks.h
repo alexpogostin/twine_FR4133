@@ -17,6 +17,8 @@ static void taskSuspend(int task);
 static void taskContinue(int task);
 static void taskControl(int task, short control);
 
+char* binToAscii(char* line, short val);
+
 static short task_1(void);
 static short task_2(void);
 static short task_3(void);

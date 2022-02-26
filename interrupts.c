@@ -43,16 +43,16 @@ __interrupt void RTCIntervalInterrupt(void)
 
     RTCMOD = RTC_MOD_COUNT;
 
-    if(task_1_status == 1)
+    if(task_1_status & BIT0)
         task_1_timeout--;
 
-    if(task_2_status == 1)
+    if(task_2_status & BIT0)
         task_2_timeout--;
 
-    if(task_3_status == 1)
+    if(task_3_status & BIT0)
         task_3_timeout--;
 
-    if(task_4_status == 1)
+    if(task_4_status & BIT0)
         task_4_timeout--;
 }
 
@@ -63,7 +63,10 @@ __interrupt void USCIA0Interrupt(void)
 {
 
     volatile unsigned char rxReg;
-    static unsigned int i, j, k;
+    static unsigned int i, j;
+    static unsigned l; // used to count steps needed for backspace
+    static unsigned s; // used to stop backspace at uartRxBuf[0]
+    unsigned int k;
 
     switch(__even_in_range(UCA0IV, 18))
     {
@@ -74,10 +77,24 @@ __interrupt void USCIA0Interrupt(void)
             rxReg = read_reg_8(EUSCI_A0_BASE + 0xC);
             if(i < UART_RX_BUF_SIZE - 1)
             {
-                uartRxBuf[i++] = rxReg;
-
-                if(rxReg == 0x0D)
+                if(rxReg == BACKSPACE)
+                {
+                    uartRxBuf[i] = NULL;
+                    if(i > 0)
+                    {
+                        i--;
+                        s = 0;
+                    }
+                }
+                else if(rxReg == CR)
+                {
+                    uartRxBuf[i++] = rxReg;
                     i = 0;
+                }
+                else
+                {
+                    uartRxBuf[i++] = rxReg;
+                }
             }
             else
             {
@@ -90,10 +107,33 @@ __interrupt void USCIA0Interrupt(void)
         break;
 
         case 0x04: // TX interrupt
-            if((rxReg >= 0x20) && (rxReg < 0x7f))
+
+            if(rxReg == BACKSPACE && l < 3 && i >= 0 && s == 0)
+            {
+                if(l == 0)
+                {
+                    l++;
+                    UCA0TXBUF = BACKSPACE;
+                }
+                else if(l == 1)
+                {
+                    l++;
+                    UCA0TXBUF = SPACE;
+                }
+                else if(l == 2)
+                {
+                    UCA0TXBUF = BACKSPACE;
+                    rxReg = NULL;
+                    l = 0;
+                    if(i == 0)
+                        s = 1;
+                }
+            }
+
+            if((rxReg >= SPACE) && (rxReg < DEL))
             {
                 UCA0TXBUF = rxReg;
-                rxReg = 0;
+                rxReg = NULL;
             }
 
 loop:
@@ -102,7 +142,7 @@ loop:
                 if(uartTxBuf[k][j])
                 {
                     UCA0TXBUF = uartTxBuf[k][j++];
-                    uartTxBuf[k][j-1] = 0x00;
+                    uartTxBuf[k][j-1] = NULL;
                 }
                 else
                 {
