@@ -15,6 +15,8 @@
 /*****************************************************************************/
 extern unsigned char uartRxBuf[UART_RX_BUF_SIZE];
 extern unsigned char uartTxBuf[UART_TX_BUF_ARRAY_SIZE][UART_TX_BUF_SIZE];
+extern unsigned char token_tree[TOKEN_TREE_SIZE];
+extern int token_pointer;
 
 /*****************************************************************************/
 /* global declarations                                                       */
@@ -50,19 +52,20 @@ static unsigned short task_2_stack[8];
 static unsigned short task_3_stack[8];
 static unsigned short task_4_stack[8];
 
-static unsigned char crlf[]    = "\r\n";
-static unsigned char prompt[]  = "\r\n# ";
-static unsigned char prompt2[] = "n# ";
-static unsigned char line[]    = "\r\n  : ";
-static unsigned char print[]   = "\x01\x01  : ";
-static unsigned char help[]    = "\r\nh: help"
-                                 "\r\nv: version"
-                                 "\r\ne: edit program"
-                                 "\r\np: print program"
-                                 "\r\n--------------------"
-                                 "\r\n.: exit program edit";
-static unsigned char version[] = "\r\nv:1.1";
-static unsigned char list[]    = "\r\nlist not implemented";
+static unsigned char crlf[]      = CRLF;
+static unsigned char edit_line[] = EDIT_LINE;
+static unsigned char prompt[]    = CRLF PROMPT;
+static unsigned char line[]      = CRLF EDIT_LINE;
+static unsigned char print[]     = PRINT_LINE;
+static unsigned char help[]      = CRLF
+                                 "h: help" CRLF
+                                 "v: version" CRLF
+                                 "e: edit program" CRLF
+                                 "r: run program" CRLF
+                                 "p: print program" CRLF
+                                 "--------------------" CRLF
+                                 ".: exit program edit";
+static unsigned char version[] = CRLF VERSION;
 
 static short lineNumber;
 static unsigned char program[MAX_PROG_LINES][MAX_PROG_LINE_LEN];
@@ -496,7 +499,7 @@ void taskTimeoutLock(short task, short count)
 }
 
 /*****************************************************************************/
-short task_1(void)
+short task_1(void) // command mode
 {
     unsigned short i = 0;
     unsigned short j = 0;
@@ -541,12 +544,21 @@ short task_1(void)
                     taskControl(TASK2,ENABLE);
                     goto exit;
                 }
+                else if(uartRxBuf[i] == 'r') // run thread
+                {
+                    taskControl(TASK1,DISABLE);
+                    taskControl(TASK3,ENABLE);
+                    goto exit;
+                }
+
             }
 
             uartTx(uartTxBuf, 0, prompt);
 
             for(i=0;i<UART_RX_BUF_SIZE;i++)
+            {
                 uartRxBuf[i] = NULL;
+            }
         }
     };
 
@@ -555,7 +567,7 @@ exit:
 }
 
 /*****************************************************************************/
-short task_2(void)
+short task_2(void) // edit mode task
 {
     unsigned short i = 0;
     unsigned short j = 0;
@@ -567,10 +579,16 @@ short task_2(void)
     {
         if(uartRxBuf[j++] == CR)
         {
+            for(k=0;k<UART_RX_BUF_SIZE;k++)
+            {
+                program[lineNumber][k] = NULL;
+            }
+
             for(k=0;k<j;k++)
             {
                 program[lineNumber][k] = uartRxBuf[k];
             }
+
             program[lineNumber][j] = LF;
 
             lineNumber++;
@@ -601,7 +619,9 @@ short task_2(void)
             uartTx(uartTxBuf, 0, line);
 
             for(i=0;i<UART_RX_BUF_SIZE;i++)
+            {
                 uartRxBuf[i] = NULL;
+            }
         }
     };
 
@@ -610,9 +630,42 @@ exit:
 }
 
 /*****************************************************************************/
-short task_3(void)
+short task_3(void) // run task
 {
+    unsigned int i;
+
     task_3_stack_size = ((taskManager_stack_3 - (unsigned short) __get_SP_register())>>1) + 1;
+
+    uartTx(uartTxBuf, 0, crlf);
+
+    for(i=0;i<TOKEN_TREE_SIZE;i++)
+        token_tree[i] = 0;
+
+    token_pointer = 0;
+
+    for(i=1;i<lineNumber;i++)
+    {
+        if(lexer(program[i]))
+        {
+
+#ifdef DEBUG
+            uartTx(uartTxBuf, 0, token_tree);
+#endif
+            uartTx(uartTxBuf, 0, edit_line);
+            uartTx(uartTxBuf, 0, program[i]);
+        }
+    }
+
+    for(i=0;i<UART_RX_BUF_SIZE;i++)
+    {
+        uartRxBuf[i] = NULL;
+    }
+
+    uartRxBuf[0] = CR;
+
+    taskControl(TASK1,ENABLE);
+    taskControl(TASK3,DISABLE);
+
     return 0;
 }
 
@@ -621,23 +674,4 @@ short task_4(void)
 {
     task_4_stack_size = ((taskManager_stack_4 - (unsigned short) __get_SP_register())>>1) + 1;
     return 0;
-}
-
-/*****************************************************************************/
-char* binToAscii(char* line, short val)
-{
-
-    if(val < 10)
-    {
-        line[2] = ' ';
-        line[3] = (unsigned char) val + 0x30;
-    }
-    else if(val > 9)
-    {
-
-        line[2] = (unsigned char) (val/10) + 0x30;
-        line[3] = (unsigned char) (val - ((val/10) * 10)) + 0x30;
-    }
-
-    return line;
 }
