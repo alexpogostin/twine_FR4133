@@ -18,7 +18,7 @@ extern unsigned char uartTxBuf[UART_TX_BUF_ARRAY_SIZE][UART_TX_BUF_SIZE];
 /*****************************************************************************/
 /* static (local) declarations                                               */
 /*****************************************************************************/
-static unsigned char banner[]  = "\r\ntwine\r\n# ";
+static unsigned char banner[]  = CRLF BANNER CRLF PROMPT;
 
 /*****************************************************************************/
 int main(void)
