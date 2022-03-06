@@ -57,9 +57,28 @@ static unsigned char edit_line[] = EDIT_LINE;
 static unsigned char prompt[]    = CRLF PROMPT;
 static unsigned char line[]      = CRLF EDIT_LINE;
 static unsigned char print[]     = PRINT_LINE;
+static unsigned char key_words[] = CRLF
+                                  "if" CRLF
+                                  "repeat" CRLF
+                                  "set" CRLF
+                                  "pause" CRLF
+                                  "call" CRLF
+                                  "=" CRLF
+                                  "in" CRLF
+                                  "out" CRLF
+                                  "on" CRLF
+                                  "off" CRLF
+                                  "gpio1" CRLF
+                                  "gpio2" CRLF
+                                  "led1" CRLF
+                                  "led2" CRLF
+                                  "but1" CRLF
+                                  "but2" CRLF
+                                  "pressed";
 static unsigned char help[]      = CRLF
                                  "h: help" CRLF
                                  "v: version" CRLF
+                                 "k: print key words" CRLF
                                  "e: edit program" CRLF
                                  "r: run program" CRLF
                                  "p: print program" CRLF
@@ -516,6 +535,10 @@ short task_1(void) // command mode
                 if(uartRxBuf[i] == 'h')
                 {
                     uartTx(uartTxBuf, 0, help);
+                }
+                if(uartRxBuf[i] == 'k')
+                {
+                    uartTx(uartTxBuf, 0, key_words);
                 }
                 else if(uartRxBuf[i] == 'v')
                 {

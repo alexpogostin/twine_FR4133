@@ -22,7 +22,7 @@ int token_pointer;
 static unsigned char *token[MAX_NUM_TOKENS] = {TOKEN_IF,
                                                TOKEN_REPEAT,
                                                TOKEN_SET,
-                                               TOKEN_SLEEP,
+                                               TOKEN_PAUSE,
                                                TOKEN_CALL,
                                                TOKEN_EQ,
                                                TOKEN_IN,
@@ -48,7 +48,7 @@ int lexer(unsigned char *program)
 
     for(progLineLen=0;progLineLen<MAX_PROG_LINE_LEN;progLineLen++)
     {
-        if(!*(program + progLineLen) | *(program + progLineLen) < SPACE)
+        if(!*(program + progLineLen) || *(program + progLineLen) < SPACE)
             break;
     }
 
@@ -56,7 +56,7 @@ int lexer(unsigned char *program)
     {
         if(*(token[i]) > progLineLen)
         {
-            break;
+            continue;
         }
 
         do

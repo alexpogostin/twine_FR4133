@@ -18,7 +18,7 @@
 #define TOKEN_IF      "\x02" "\x41" "if"      // A
 #define TOKEN_REPEAT  "\x06" "\x42" "repeat"  // B
 #define TOKEN_SET     "\x03" "\x43" "set"     // C
-#define TOKEN_SLEEP   "\x05" "\x44" "sleep"   // D
+#define TOKEN_PAUSE   "\x05" "\x44" "pause"   // D
 #define TOKEN_CALL    "\x04" "\x45" "call"    // E
 #define TOKEN_EQ      "\x01" "\x46" "="       // F
 #define TOKEN_IN      "\x02" "\x47" "in"      // G
