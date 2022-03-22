@@ -22,6 +22,7 @@
 #include "power.h"
 #include "string.h"
 #include "lexer.h"
+#include "interpreter.h"
 
 #define read_reg_8(x) (*((volatile unsigned char *)((unsigned short)x)))
 #define read_reg_16(x) (*((volatile unsigned short *)((unsigned short)x)))
@@ -32,6 +33,7 @@
 #define TRUE 1
 #define FALSE 0
 
-#undef DEBUG
+#define DEBUG 0
+#define debug(args ...) if (DEBUG) uartTx(args)
 
 #endif

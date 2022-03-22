@@ -15,7 +15,7 @@
 /*****************************************************************************/
 extern unsigned char uartRxBuf[UART_RX_BUF_SIZE];
 extern unsigned char uartTxBuf[UART_TX_BUF_ARRAY_SIZE][UART_TX_BUF_SIZE];
-extern unsigned char token_tree[TOKEN_TREE_SIZE];
+extern unsigned char token_tree[MAX_TOKEN_TREE_SIZE];
 extern int token_pointer;
 
 /*****************************************************************************/
@@ -36,6 +36,8 @@ short task_4_timeout = 0;
 /*****************************************************************************/
 static unsigned short *SP_current;
 static unsigned short task_current = 0;
+static unsigned short run_state;
+
 
 static unsigned short taskManager_stack_1;
 static unsigned short taskManager_stack_2;
@@ -58,7 +60,7 @@ static unsigned char prompt[]    = CRLF PROMPT;
 static unsigned char line[]      = CRLF EDIT_LINE;
 static unsigned char print[]     = PRINT_LINE;
 static unsigned char key_words[] = CRLF
-                                  "if" CRLF
+                                  "is" CRLF
                                   "repeat" CRLF
                                   "set" CRLF
                                   "pause" CRLF
@@ -68,22 +70,24 @@ static unsigned char key_words[] = CRLF
                                   "out" CRLF
                                   "on" CRLF
                                   "off" CRLF
-                                  "gpio1" CRLF
-                                  "gpio2" CRLF
+                                  "yes:" CRLF
+                                  "no:" CRLF
                                   "led1" CRLF
                                   "led2" CRLF
                                   "but1" CRLF
                                   "but2" CRLF
-                                  "pressed";
+                                  "pressed" CRLF
+                                  "finish" CRLF
+                                  "rerun";
 static unsigned char help[]      = CRLF
-                                 "h: help" CRLF
-                                 "v: version" CRLF
-                                 "k: print key words" CRLF
-                                 "e: edit program" CRLF
-                                 "r: run program" CRLF
-                                 "p: print program" CRLF
-                                 "--------------------" CRLF
-                                 ".: exit program edit";
+                                  "h: help" CRLF
+                                  "v: version" CRLF
+                                  "p: print key words" CRLF
+                                  "e: edit program" CRLF
+                                  "r: run program" CRLF
+                                  "l: list program" CRLF
+                                  "--------------------" CRLF
+                                  ".: exit program edit";
 static unsigned char version[] = CRLF VERSION;
 
 static short lineNumber;
@@ -104,7 +108,7 @@ void taskManager(void)
     taskControl(TASK3,DISABLE);
     taskControl(TASK4,DISABLE);
 
-    while(1)
+    while(TRUE)
     {
         switch (++task_current)
         {
@@ -536,7 +540,7 @@ short task_1(void) // command mode
                 {
                     uartTx(uartTxBuf, 0, help);
                 }
-                if(uartRxBuf[i] == 'k')
+                if(uartRxBuf[i] == 'p')
                 {
                     uartTx(uartTxBuf, 0, key_words);
                 }
@@ -544,7 +548,7 @@ short task_1(void) // command mode
                 {
                     uartTx(uartTxBuf, 0, version);
                 }
-                else if(uartRxBuf[i] == 'p')
+                else if(uartRxBuf[i] == 'l')
                 {
                     uartTx(uartTxBuf, 0, crlf);
                     for(k=1;k<lineNumber;k++)
@@ -563,14 +567,14 @@ short task_1(void) // command mode
                         uartRxBuf[k] = NULL;
                     }
                     uartRxBuf[0] = CR;
-                    taskControl(TASK1,DISABLE);
-                    taskControl(TASK2,ENABLE);
+                    taskControl(TASK1, DISABLE);
+                    taskControl(TASK2, ENABLE);
                     goto exit;
                 }
                 else if(uartRxBuf[i] == 'r') // run thread
                 {
-                    taskControl(TASK1,DISABLE);
-                    taskControl(TASK3,ENABLE);
+                    taskControl(TASK1, DISABLE);
+                    taskControl(TASK3, ENABLE);
                     goto exit;
                 }
 
@@ -632,8 +636,8 @@ short task_2(void) // edit mode task
 
                     lineNumber--;
                     uartRxBuf[0] = CR;
-                    taskControl(TASK1,ENABLE);
-                    taskControl(TASK2,DISABLE);
+                    taskControl(TASK1, ENABLE);
+                    taskControl(TASK2, DISABLE);
                     goto exit;
                 }
             }
@@ -653,7 +657,7 @@ exit:
 }
 
 /*****************************************************************************/
-short task_3(void) // run task
+short task_3(void) // interpreter task
 {
     unsigned int i;
 
@@ -661,7 +665,7 @@ short task_3(void) // run task
 
     uartTx(uartTxBuf, 0, crlf);
 
-    for(i=0;i<TOKEN_TREE_SIZE;i++)
+    for(i=0;i<MAX_TOKEN_TREE_SIZE;i++)
         token_tree[i] = 0;
 
     token_pointer = 0;
@@ -670,14 +674,13 @@ short task_3(void) // run task
     {
         if(lexer(program[i]))
         {
-
-#ifdef DEBUG
-            uartTx(uartTxBuf, 0, token_tree);
-#endif
-            uartTx(uartTxBuf, 0, edit_line);
-            uartTx(uartTxBuf, 0, program[i]);
+            debug(uartTxBuf, 0, token_tree);
+            debug(uartTxBuf, 0, edit_line);
+            debug(uartTxBuf, 0, program[i]);
         }
     }
+
+    //interpreter((unsigned char*) &token_tree);
 
     for(i=0;i<UART_RX_BUF_SIZE;i++)
     {
@@ -686,15 +689,102 @@ short task_3(void) // run task
 
     uartRxBuf[0] = CR;
 
-    taskControl(TASK1,ENABLE);
-    taskControl(TASK3,DISABLE);
+    taskControl(TASK3, DISABLE);
+    taskControl(TASK4, ENABLE);
 
     return 0;
 }
 
 /*****************************************************************************/
-short task_4(void)
+short task_4(void) // run task
 {
+    static int i;
+    int j = 0, k;
+
     task_4_stack_size = ((taskManager_stack_4 - (unsigned short) __get_SP_register())>>1) + 1;
+
+    if(!i)
+    {
+        run_state = token_tree[0];
+    }
+
+    while(uartRxBuf[j])
+    {
+        if(uartRxBuf[j] == CTRL_C)
+        {
+            for(k=0;k<UART_RX_BUF_SIZE;k++)
+            {
+                uartRxBuf[k] = NULL;
+            }
+            debug(uartTxBuf, 0, "ctrl-c\r\n");
+            uartRxBuf[0] = CR;
+            run_state = 0x00; // program terminated
+            break;
+        }
+        j++;
+    };
+
+    switch(run_state)
+    {
+            case 'A': // is
+            debug(uartTxBuf, 0, "A\r\n");
+            run_state = token_tree[++i];
+            break;
+
+            case 'K': // yes:
+            debug(uartTxBuf, 0, "K\r\n");
+            run_state = token_tree[++i];
+            break;
+
+            case 'L': // no:
+            debug(uartTxBuf, 0, "L\r\n");
+            run_state = token_tree[++i];
+            break;
+
+            case 'M': // led1
+            debug(uartTxBuf, 0, "M\r\n");
+            run_state = token_tree[++i];
+            break;
+
+            case 'N': // led2
+            debug(uartTxBuf, 0, "N\r\n");
+            run_state = token_tree[++i];
+            break;
+
+            case 'O': // but1
+            debug(uartTxBuf, 0, "O\r\n");
+            run_state = token_tree[++i];
+            break;
+
+            case 'P': // but2
+            debug(uartTxBuf, 0, "P\r\n");
+            run_state = token_tree[++i];
+            break;
+
+            case 'Q': // pressed
+            debug(uartTxBuf, 0, "Q\r\n");
+            run_state = token_tree[++i];
+            break;
+
+            case 'R': // finish
+            uartTx(uartTxBuf, 0, "program finished\r\n");
+            taskControl(TASK4, DISABLE);
+            taskControl(TASK1, ENABLE);
+            i = 0;
+            break;
+
+            case 'S': // rerun
+            debug(uartTxBuf, 0, "S\r\n");
+            i = 0;
+            break;
+
+            default:
+            uartTx(uartTxBuf, 0, "program terminated\r\n");
+            taskControl(TASK4, DISABLE);
+            taskControl(TASK1, ENABLE);
+            i = 0;
+            break;
+    }
+
     return 0;
 }
