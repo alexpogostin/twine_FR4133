@@ -12,6 +12,7 @@
 #define STRING_H
 
 #define NULL      0x00
+#define CTRL_C    0x03
 #define BACKSPACE 0x08
 #define LF        0x0A
 #define CR        0x0D

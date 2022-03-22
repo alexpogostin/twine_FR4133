@@ -13,13 +13,13 @@
 /*****************************************************************************/
 /* global declarations                                                       */
 /*****************************************************************************/
-unsigned char token_tree[TOKEN_TREE_SIZE];
+unsigned char token_tree[MAX_TOKEN_TREE_SIZE];
 int token_pointer;
 
 /*****************************************************************************/
 /* static (local) declarations                                               */
 /*****************************************************************************/
-static unsigned char *token[MAX_NUM_TOKENS] = {TOKEN_IF,
+static unsigned char *token[MAX_NUM_TOKENS] = {TOKEN_IS,
                                                TOKEN_REPEAT,
                                                TOKEN_SET,
                                                TOKEN_PAUSE,
@@ -29,22 +29,27 @@ static unsigned char *token[MAX_NUM_TOKENS] = {TOKEN_IF,
                                                TOKEN_OUT,
                                                TOKEN_ON,
                                                TOKEN_OFF,
-                                               TOKEN_GPIO1,
-                                               TOKEN_GPIO2,
+                                               TOKEN_YES,
+                                               TOKEN_NO,
                                                TOKEN_LED1,
                                                TOKEN_LED2,
                                                TOKEN_BUT1,
                                                TOKEN_BUT2,
-                                               TOKEN_PRESSED};
+                                               TOKEN_PRESSED,
+                                               TOKEN_FINISH,
+                                               TOKEN_RERUN,
+                                               TOKEN_FINAL,
+                                               };
 
 /*****************************************************************************/
 int lexer(unsigned char *program)
 {
-    int i, j, k;
+    unsigned int i;
     int progLineLen;
-    int temp = 0;
-
-    j = 0;
+    int progLineIndex = 0;
+    int tokenIndex = 0;
+    int tokenNum = 0;
+    int matchLen = 0;
 
     for(progLineLen=0;progLineLen<MAX_PROG_LINE_LEN;progLineLen++)
     {
@@ -52,39 +57,52 @@ int lexer(unsigned char *program)
             break;
     }
 
-    for(i=0;i<MAX_NUM_TOKENS;i++)
+    do
     {
-        if(*(token[i]) > progLineLen)
+        if(*(token[tokenNum]) > progLineLen)
         {
             continue;
         }
 
-        do
+        for(i=progLineIndex, tokenIndex = 0;i<progLineLen;i++, tokenIndex++)
         {
-            for(k=2;k < *(token[i]) + 2;k++)
+            if(*(program + i) == SPACE)
             {
-                if(*(program + (k - 2) + j) == *(token[i] + k))
-                {
-                    temp++;
-                }
+                tokenIndex--; // if skipping space don't increment token pointer
+                continue;
             }
 
-            if(temp < *(token[i]) || temp > *(token[i]))
+            if(*(program + i) == *(token[tokenNum] + TOKEN_HEADER_LEN + tokenIndex))
             {
-                temp = 0;
+                matchLen++;
             }
-
-            if(temp == *(token[i]))
+            else if(*(token[tokenNum] + TOKEN_HEADER_LEN + tokenIndex) == 0x0) // end of token
             {
-                token_tree[token_pointer++] = *(token[i] + 1);
                 break;
             }
         }
-        while(*(program + j++));
 
-        temp = 0;
-        j = 0;
+        if(matchLen < *(token[tokenNum]) || matchLen > *(token[tokenNum]))
+        {
+            matchLen = 0;
+        }
+
+        if(matchLen == *(token[tokenNum]))
+        {
+            token_tree[token_pointer++] = *(token[tokenNum] + 1);
+
+            if(progLineLen == i)
+            {
+                break;
+            }
+
+            matchLen = 0;
+            progLineIndex = i;
+            tokenNum = -1;
+        }
+
     }
+    while(token[tokenNum++]);
 
     return TRUE;
 }

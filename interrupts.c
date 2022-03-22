@@ -91,6 +91,11 @@ __interrupt void USCIA0Interrupt(void)
                     uartRxBuf[i++] = rxReg;
                     i = 0;
                 }
+                else if(rxReg == 0x03)
+                {
+                    uartRxBuf[0] = CTRL_C;
+                    i = 0;
+                }
                 else
                 {
                     uartRxBuf[i++] = rxReg;
