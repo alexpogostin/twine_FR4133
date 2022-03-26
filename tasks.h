@@ -17,15 +17,15 @@
 #define ENABLE 1
 #define DISABLE 0
 
-void taskManager(void);
+char* binToAscii(char* line, short val);
 
-static void taskSleep(int);
+void taskManager(void);
+void taskSleep(int);
+void taskControl(int task, short control);
+
 static void taskTimeoutLock(short task, short count);
 static void taskSuspend(int task);
 static void taskContinue(int task);
-static void taskControl(int task, short control);
-
-char* binToAscii(char* line, short val);
 
 static short task_1(void);
 static short task_2(void);
