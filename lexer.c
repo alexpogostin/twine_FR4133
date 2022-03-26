@@ -14,7 +14,7 @@
 /* global declarations                                                       */
 /*****************************************************************************/
 unsigned char token_tree[MAX_TOKEN_TREE_SIZE];
-int token_pointer;
+int tokenPointer;
 
 /*****************************************************************************/
 /* static (local) declarations                                               */
@@ -57,10 +57,13 @@ int lexer(unsigned char *program)
             break;
     }
 
-    do
+    while(token[tokenNum])
     {
+
+        // if line contains yes:, but token=pressed
         if(*(token[tokenNum]) > progLineLen)
         {
+            tokenNum++;
             continue;
         }
 
@@ -85,11 +88,13 @@ int lexer(unsigned char *program)
         if(matchLen < *(token[tokenNum]) || matchLen > *(token[tokenNum]))
         {
             matchLen = 0;
+            tokenNum++;
+            continue;
         }
 
         if(matchLen == *(token[tokenNum]))
         {
-            token_tree[token_pointer++] = *(token[tokenNum] + 1);
+            token_tree[tokenPointer++] = *(token[tokenNum] + 1);
 
             if(progLineLen == i)
             {
@@ -98,11 +103,9 @@ int lexer(unsigned char *program)
 
             matchLen = 0;
             progLineIndex = i;
-            tokenNum = -1;
+            tokenNum = 0;
         }
-
     }
-    while(token[tokenNum++]);
 
     return TRUE;
 }

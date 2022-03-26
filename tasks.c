@@ -16,7 +16,7 @@
 extern unsigned char uartRxBuf[UART_RX_BUF_SIZE];
 extern unsigned char uartTxBuf[UART_TX_BUF_ARRAY_SIZE][UART_TX_BUF_SIZE];
 extern unsigned char token_tree[MAX_TOKEN_TREE_SIZE];
-extern int token_pointer;
+extern int tokenPointer;
 
 /*****************************************************************************/
 /* global declarations                                                       */
@@ -31,28 +31,28 @@ short task_2_timeout = 0;
 short task_3_timeout = 0;
 short task_4_timeout = 0;
 
+// special case task_4, for use inside interpreter.c 'pause'
+unsigned short taskManager_stack_4;
+unsigned short task_4_stack_size;
+unsigned short task_4_stack[8];
+
 /*****************************************************************************/
 /* static (local) declarations                                               */
 /*****************************************************************************/
 static unsigned short *SP_current;
 static unsigned short task_current = 0;
-static unsigned short run_state;
-
 
 static unsigned short taskManager_stack_1;
 static unsigned short taskManager_stack_2;
 static unsigned short taskManager_stack_3;
-static unsigned short taskManager_stack_4;
 
 static unsigned short task_1_stack_size;
 static unsigned short task_2_stack_size;
 static unsigned short task_3_stack_size;
-static unsigned short task_4_stack_size;
 
 static unsigned short task_1_stack[8];
 static unsigned short task_2_stack[8];
 static unsigned short task_3_stack[8];
-static unsigned short task_4_stack[8];
 
 static unsigned char crlf[]      = CRLF;
 static unsigned char edit_line[] = EDIT_LINE;
@@ -301,7 +301,7 @@ void taskManager(void)
 }
 
 /***************************************AJP***********************************/
-static void taskSleep(int count)
+void taskSleep(int count)
 {
     short i;
 
@@ -469,8 +469,7 @@ static void taskContinue(int task)
 }
 
 /*****************************************************************************/
-// 0=off, 1=on
-static void taskControl(int task, short control)
+void taskControl(int task, short control)
 {
     __disable_interrupt();
 
@@ -668,7 +667,7 @@ short task_3(void) // interpreter task
     for(i=0;i<MAX_TOKEN_TREE_SIZE;i++)
         token_tree[i] = 0;
 
-    token_pointer = 0;
+    tokenPointer = 0;
 
     for(i=1;i<lineNumber;i++)
     {
@@ -679,8 +678,6 @@ short task_3(void) // interpreter task
             debug(uartTxBuf, 0, program[i]);
         }
     }
-
-    //interpreter((unsigned char*) &token_tree);
 
     for(i=0;i<UART_RX_BUF_SIZE;i++)
     {
@@ -698,93 +695,7 @@ short task_3(void) // interpreter task
 /*****************************************************************************/
 short task_4(void) // run task
 {
-    static int i;
-    int j = 0, k;
-
-    task_4_stack_size = ((taskManager_stack_4 - (unsigned short) __get_SP_register())>>1) + 1;
-
-    if(!i)
-    {
-        run_state = token_tree[0];
-    }
-
-    while(uartRxBuf[j])
-    {
-        if(uartRxBuf[j] == CTRL_C)
-        {
-            for(k=0;k<UART_RX_BUF_SIZE;k++)
-            {
-                uartRxBuf[k] = NULL;
-            }
-            debug(uartTxBuf, 0, "ctrl-c\r\n");
-            uartRxBuf[0] = CR;
-            run_state = 0x00; // program terminated
-            break;
-        }
-        j++;
-    };
-
-    switch(run_state)
-    {
-            case 'A': // is
-            debug(uartTxBuf, 0, "A\r\n");
-            run_state = token_tree[++i];
-            break;
-
-            case 'K': // yes:
-            debug(uartTxBuf, 0, "K\r\n");
-            run_state = token_tree[++i];
-            break;
-
-            case 'L': // no:
-            debug(uartTxBuf, 0, "L\r\n");
-            run_state = token_tree[++i];
-            break;
-
-            case 'M': // led1
-            debug(uartTxBuf, 0, "M\r\n");
-            run_state = token_tree[++i];
-            break;
-
-            case 'N': // led2
-            debug(uartTxBuf, 0, "N\r\n");
-            run_state = token_tree[++i];
-            break;
-
-            case 'O': // but1
-            debug(uartTxBuf, 0, "O\r\n");
-            run_state = token_tree[++i];
-            break;
-
-            case 'P': // but2
-            debug(uartTxBuf, 0, "P\r\n");
-            run_state = token_tree[++i];
-            break;
-
-            case 'Q': // pressed
-            debug(uartTxBuf, 0, "Q\r\n");
-            run_state = token_tree[++i];
-            break;
-
-            case 'R': // finish
-            uartTx(uartTxBuf, 0, "program finished\r\n");
-            taskControl(TASK4, DISABLE);
-            taskControl(TASK1, ENABLE);
-            i = 0;
-            break;
-
-            case 'S': // rerun
-            debug(uartTxBuf, 0, "S\r\n");
-            i = 0;
-            break;
-
-            default:
-            uartTx(uartTxBuf, 0, "program terminated\r\n");
-            taskControl(TASK4, DISABLE);
-            taskControl(TASK1, ENABLE);
-            i = 0;
-            break;
-    }
+    interpreter((unsigned char*) &token_tree);
 
     return 0;
 }

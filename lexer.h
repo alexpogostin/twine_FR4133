@@ -11,7 +11,7 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#define MAX_NUM_TOKENS 19
+#define MAX_NUM_TOKENS 20
 #define MAX_TOKEN_LEN 8
 #define MAX_TOKEN_TREE_SIZE 32
 #define TOKEN_HEADER_LEN 2
