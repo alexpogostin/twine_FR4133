@@ -49,7 +49,7 @@ short task_2(void)
 }
 ```
 
-# is - a simple interpreter
+# Is - a simple interpreter
 
 The examples have been expanded to include a simple interpreter called Is.
 This simple program will output "Hello", pause for 1 second and repeat. Use Ctrl-C to exit.
