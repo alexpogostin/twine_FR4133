@@ -48,3 +48,17 @@ short task_2(void)
   return 0;
 }
 ```
+
+# Is Interpreter
+
+The examples have been expanded to include a simple interpreter called Is.
+
+Example:
+
+1. out
+2. pause
+3. rerun
+
+This simple program will output "Hello", pause for 1 second and repeat. Use Ctrl-C to exit.
+
+
