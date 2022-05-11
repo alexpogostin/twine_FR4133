@@ -56,7 +56,6 @@ This simple program will output "Hello", pause for 1 second and repeat. Use Ctrl
 
 Example:
 ```
-
 # e
  1: out
  2: pause
