@@ -13,6 +13,8 @@
 /*****************************************************************************/
 /* global declarations                                                       */
 /*****************************************************************************/
+extern unsigned char strVars[4][32];
+
 extern unsigned char uartRxBuf[UART_RX_BUF_SIZE];
 extern unsigned char uartTxBuf[UART_TX_BUF_ARRAY_SIZE][UART_TX_BUF_SIZE];
 
@@ -23,19 +25,20 @@ extern unsigned short taskManager_stack_4;
 /*****************************************************************************/
 /* static (local) declarations                                               */
 /*****************************************************************************/
-static unsigned short run_state;
+static unsigned short runState;
 
 /*****************************************************************************/
-int interpreter(unsigned char *token_tree) // abstract syntax tree
+int interpreter(unsigned char *tokenTree) // abstract syntax tree
 {
-    static int i;
-    int j = 0, k;
+    static int i = 0;
+    int j = 0;
+    int k = 0;
 
     task_4_stack_size = ((taskManager_stack_4 - (unsigned short) __get_SP_register())>>1) + 1;
 
     if(!i)
     {
-        run_state = token_tree[0];
+        runState = tokenTree[0];
     }
 
     while(uartRxBuf[j])
@@ -48,63 +51,63 @@ int interpreter(unsigned char *token_tree) // abstract syntax tree
             }
             debug(uartTxBuf, 0, "ctrl-c\r\n");
             uartRxBuf[0] = CR;
-            run_state = 0x00; // program terminated
+            runState = 0x01; // program terminated
             break;
         }
         j++;
     };
 
-    switch(run_state)
+    switch(runState)
     {
         case 'A': // is
         debug(uartTxBuf, 0, "A\r\n");
-        run_state = token_tree[++i];
+        runState = tokenTree[++i];
         break;
 
         case 'D': // pause
         debug(uartTxBuf, 0, "D\r\n");
         taskSleep(1);
-        run_state = token_tree[++i];
+        runState = tokenTree[++i];
         break;
 
         case 'H': // out
-        uartTx(uartTxBuf, 0, "Hello world\r\n");
-        run_state = token_tree[++i];
+        debug(uartTxBuf, 0, "H\r\n");
+        runState = tokenTree[++i];
         break;
 
         case 'K': // yes:
         debug(uartTxBuf, 0, "K\r\n");
-        run_state = token_tree[++i];
+        runState = tokenTree[++i];
         break;
 
         case 'L': // no:
         debug(uartTxBuf, 0, "L\r\n");
-        run_state = token_tree[++i];
+        runState = tokenTree[++i];
         break;
 
         case 'M': // led1
         debug(uartTxBuf, 0, "M\r\n");
-        run_state = token_tree[++i];
+        runState = tokenTree[++i];
         break;
 
         case 'N': // led2
         debug(uartTxBuf, 0, "N\r\n");
-        run_state = token_tree[++i];
+        runState = tokenTree[++i];
         break;
 
         case 'O': // but1
         debug(uartTxBuf, 0, "O\r\n");
-        run_state = token_tree[++i];
+        runState = tokenTree[++i];
         break;
 
         case 'P': // but2
         debug(uartTxBuf, 0, "P\r\n");
-        run_state = token_tree[++i];
+        runState = tokenTree[++i];
         break;
 
         case 'Q': // pressed
         debug(uartTxBuf, 0, "Q\r\n");
-        run_state = token_tree[++i];
+        runState = tokenTree[++i];
         break;
 
         case 'R': // finish
@@ -119,8 +122,23 @@ int interpreter(unsigned char *token_tree) // abstract syntax tree
         i = 0;
         break;
 
-        default:
+        case 'X': // string #1
+        debug(uartTxBuf, 0, "1\r\n");
+        j = tokenTree[++i];
+        uartTx(uartTxBuf, 0, &strVars[j & 0x0F][0]);
+        uartTx(uartTxBuf, 0, CRLF);
+        runState = tokenTree[++i];
+        break;
+
+        case 0x01: // ctrl-c
         uartTx(uartTxBuf, 0, "program terminated\r\n");
+        taskControl(TASK4, DISABLE);
+        taskControl(TASK1, ENABLE);
+        i = 0;
+        break;
+
+        default:
+        uartTx(uartTxBuf, 0, "program error\r\n");
         taskControl(TASK4, DISABLE);
         taskControl(TASK1, ENABLE);
         i = 0;

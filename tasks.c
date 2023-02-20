@@ -15,8 +15,11 @@
 /*****************************************************************************/
 extern unsigned char uartRxBuf[UART_RX_BUF_SIZE];
 extern unsigned char uartTxBuf[UART_TX_BUF_ARRAY_SIZE][UART_TX_BUF_SIZE];
-extern unsigned char token_tree[MAX_TOKEN_TREE_SIZE];
-extern int tokenPointer;
+extern unsigned char tokenTree[MAX_TOKEN_TREE_SIZE];
+extern int tokenTreeIndex;
+extern unsigned char strVars[4][32];
+extern int strVarsIndex;
+extern int strNum;
 
 /*****************************************************************************/
 /* global declarations                                                       */
@@ -599,6 +602,9 @@ short task_2(void) // edit mode task
     unsigned short j = 0;
     unsigned short k = 0;
 
+    strVarsIndex = 0;
+    strNum = 0x30;
+
     task_2_stack_size = ((taskManager_stack_2 - (unsigned short) __get_SP_register())>>1) + 1;
 
     while(uartRxBuf[j])
@@ -659,21 +665,34 @@ exit:
 short task_3(void) // interpreter task
 {
     unsigned int i;
+    unsigned int j;
 
     task_3_stack_size = ((taskManager_stack_3 - (unsigned short) __get_SP_register())>>1) + 1;
 
-    uartTx(uartTxBuf, 0, crlf);
+    strVarsIndex = 0;
+    strNum = 0x30;
+    tokenTreeIndex = 0;
+
+    for(i=0;i<4;i++)
+    {
+        for(j=0;j<32;j++)
+        {
+            strVars[i][j] = 0x00;
+        }
+    }
 
     for(i=0;i<MAX_TOKEN_TREE_SIZE;i++)
-        token_tree[i] = 0;
+    {
+        tokenTree[i] = 0;
+    }
 
-    tokenPointer = 0;
+    uartTx(uartTxBuf, 0, crlf);
 
     for(i=1;i<lineNumber;i++)
     {
         if(lexer(program[i]))
         {
-            debug(uartTxBuf, 0, token_tree);
+            debug(uartTxBuf, 0, tokenTree);
             debug(uartTxBuf, 0, edit_line);
             debug(uartTxBuf, 0, program[i]);
         }
@@ -695,7 +714,7 @@ short task_3(void) // interpreter task
 /*****************************************************************************/
 short task_4(void) // run task
 {
-    interpreter((unsigned char*) &token_tree);
+    interpreter((unsigned char*) &tokenTree);
 
     return 0;
 }

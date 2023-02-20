@@ -14,6 +14,8 @@
 #define MAX_NUM_TOKENS 20
 #define MAX_TOKEN_LEN 8
 #define MAX_TOKEN_TREE_SIZE 32
+#define TOKEN_SIZE 0
+#define TOKEN 1
 #define TOKEN_HEADER_LEN 2
 
 #define TOKEN_IS      "\x02" "\x41" "is"      // A
