@@ -13,8 +13,14 @@
 /*****************************************************************************/
 /* global declarations                                                       */
 /*****************************************************************************/
-unsigned char token_tree[MAX_TOKEN_TREE_SIZE];
-int tokenPointer;
+unsigned char strVars[4][32];
+int intVars[4];
+
+unsigned char tokenTree[MAX_TOKEN_TREE_SIZE];
+int tokenTreeIndex;
+
+int strVarsIndex;
+int strNum;
 
 /*****************************************************************************/
 /* static (local) declarations                                               */
@@ -44,12 +50,11 @@ static unsigned char *token[MAX_NUM_TOKENS] = {TOKEN_IS,
 /*****************************************************************************/
 int lexer(unsigned char *program)
 {
-    unsigned int i;
+    int i = 0;
     int progLineLen;
-    int progLineIndex = 0;
-    int tokenIndex = 0;
+    unsigned char *p = program;
     int tokenNum = 0;
-    int matchLen = 0;
+    int tokenIndex = 0;
 
     for(progLineLen=0;progLineLen<MAX_PROG_LINE_LEN;progLineLen++)
     {
@@ -57,54 +62,47 @@ int lexer(unsigned char *program)
             break;
     }
 
-    while(token[tokenNum])
+    for(tokenNum=0;tokenNum<MAX_NUM_TOKENS;) // search through list of tokens
     {
+        if(*(p) == 0x0D)
+            break;
 
-        // if line contains yes:, but token=pressed
-        if(*(token[tokenNum]) > progLineLen)
+        while(*(p) == 0x20)
+            p++;
+
+        if(*(p) == 0x22)
         {
-            tokenNum++;
-            continue;
-        }
-
-        for(i=progLineIndex, tokenIndex = 0;i<progLineLen;i++, tokenIndex++)
-        {
-            if(*(program + i) == SPACE)
+            p++;
+            i = 0;
+            while(*(p) != 0x22)
             {
-                tokenIndex--; // if skipping space don't increment token pointer
-                continue;
+                strVars[strVarsIndex][i++] = *(p++);
             }
-
-            if(*(program + i) == *(token[tokenNum] + TOKEN_HEADER_LEN + tokenIndex))
-            {
-                matchLen++;
-            }
-            else if(*(token[tokenNum] + TOKEN_HEADER_LEN + tokenIndex) == 0x0) // end of token
-            {
-                break;
-            }
-        }
-
-        if(matchLen < *(token[tokenNum]) || matchLen > *(token[tokenNum]))
-        {
-            matchLen = 0;
-            tokenNum++;
-            continue;
-        }
-
-        if(matchLen == *(token[tokenNum]))
-        {
-            token_tree[tokenPointer++] = *(token[tokenNum] + 1);
-
-            if(progLineLen == i)
-            {
-                break;
-            }
-
-            matchLen = 0;
-            progLineIndex = i;
+            p++;
+            strVarsIndex++;
+            tokenTree[tokenTreeIndex++] = 'X';
+            tokenTree[tokenTreeIndex++] = strNum++;
             tokenNum = 0;
+            continue;
         }
+
+        if(*(p) == *(token[tokenNum] + TOKEN_HEADER_LEN)) // does character match the first letter of token
+        {
+            for(tokenIndex=0;tokenIndex < *(token[tokenNum] + TOKEN_SIZE);tokenIndex++) // match each character of token
+            {
+                if(*(p + tokenIndex) != *(token[tokenNum] + TOKEN_HEADER_LEN + tokenIndex))
+                {
+                    goto tokenNotFound;
+                }
+            }
+            tokenTree[tokenTreeIndex++] = *(token[tokenNum] + TOKEN);
+            p += *(token[tokenNum] + TOKEN_SIZE);
+            tokenNum = 0;
+            continue;
+        }
+
+tokenNotFound:
+        tokenNum++;
     }
 
     return TRUE;
