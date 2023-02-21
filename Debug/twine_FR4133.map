@@ -1,10 +1,10 @@
 ******************************************************************************
                   MSP430 Linker PC v21.6.0                     
 ******************************************************************************
->> Linked Fri Jan  7 19:54:31 2022
+>> Linked Sun Feb 19 22:07:03 2023
 
 OUTPUT FILE NAME:   <twine_FR4133.out>
-ENTRY POINT SYMBOL: "_c_int00_noargs"  address: 0000c85e
+ENTRY POINT SYMBOL: "_c_int00_noargs"  address: 0000d4d6
 
 
 MEMORY CONFIGURATION
@@ -15,8 +15,8 @@ MEMORY CONFIGURATION
   PERIPHERALS_8BIT      00000010   000000f0  00000000  000000f0  RWIX
   PERIPHERALS_16BIT     00000100   00000100  00000000  00000100  RWIX
   INFOA                 00001800   00000200  00000000  00000200  RWIX
-  RAM                   00002000   00000800  00000104  000006fc  RWIX
-  FRAM                  0000c400   00003b80  000004e2  0000369e  RWIX
+  RAM                   00002000   00000800  000007a6  0000005a  RWIX
+  FRAM                  0000c400   00003b80  00001178  00002a08  RWIX
   JTAGSIGNATURE         0000ff80   00000004  00000004  00000000  RWIX  ffff 
   BSLSIGNATURE          0000ff84   00000004  00000004  00000000  RWIX  ffff 
   INT00                 0000ff88   00000002  00000000  00000002  RWIX
@@ -89,59 +89,100 @@ section   page    origin      length       input sections
 .TI.persistent 
 *          0    0000c400    00000000     UNINITIALIZED
 
-.cinit     0    0000c400    0000001a     
-                  0000c400    00000007     (.cinit..data.load) [load image, compression = lzss]
-                  0000c407    00000001     --HOLE-- [fill = 0]
-                  0000c408    00000006     (__TI_handler_table)
-                  0000c40e    00000004     (.cinit..bss.load) [load image, compression = zero_init]
-                  0000c412    00000008     (__TI_cinit_table)
+.cinit     0    0000c400    00000178     
+                  0000c400    00000166     (.cinit..data.load) [load image]
+                  0000c566    00000006     (__TI_handler_table)
+                  0000c56c    00000004     (.cinit..bss.load) [load image, compression = zero_init]
+                  0000c570    00000008     (__TI_cinit_table)
 
-.pinit     0    0000c41a    00000000     UNINITIALIZED
+.pinit     0    0000c578    00000000     UNINITIALIZED
 
-.binit     0    0000c41a    00000000     
+.binit     0    0000c578    00000000     
 
 .init_array 
-*          0    0000c41a    00000000     UNINITIALIZED
+*          0    0000c578    00000000     UNINITIALIZED
 
 .mspabi.exidx 
-*          0    0000c41a    00000000     UNINITIALIZED
+*          0    0000c578    00000000     UNINITIALIZED
 
 .mspabi.extab 
-*          0    0000c41a    00000000     UNINITIALIZED
+*          0    0000c578    00000000     UNINITIALIZED
 
-.const     0    0000c41a    00000000     UNINITIALIZED
+.const     0    0000c578    000000ce     
+                  0000c578    00000090     lexer.obj (.const:.string)
+                  0000c608    0000003e     interpreter.obj (.const:.string)
 
-.text      0    0000c41a    000004c8     
-                  0000c41a    00000152     tasks.obj (.text:taskManager)
-                  0000c56c    000000f0     tasks.obj (.text:taskSleep)
-                  0000c65c    0000006e     rts430x_sc_sd_eabi.lib : copy_decompress_lzss.c.obj (.text:decompress:lzss:__TI_decompress_lzss)
-                  0000c6ca    00000052                            : autoinit.c.obj (.text:__TI_auto_init_nobinit_nopinit_hold_wdt:__TI_auto_init_nobinit_nopinit_hold_wdt)
-                  0000c71c    00000042     interrupts.obj (.text:RTCIntervalInterrupt)
-                  0000c75e    00000034     gpios.obj (.text:initGpios)
-                  0000c792    00000032     tasks.obj (.text:taskTimeoutLock)
-                  0000c7c4    0000002e     clocks.obj (.text:startRtcClk)
-                  0000c7f2    00000026     tasks.obj (.text:task_1)
-                  0000c818    00000026     tasks.obj (.text:task_2)
-                  0000c83e    00000020     main.obj (.text:main)
-                  0000c85e    0000001c     rts430x_sc_sd_eabi.lib : boot.c.obj (.text:_c_int00_noargs)
-                  0000c87a    0000001c     clocks.obj (.text:startXt1Clk)
-                  0000c896    00000014     rts430x_sc_sd_eabi.lib : copy_zero_init.c.obj (.text:decompress:ZI:__TI_zero_init_nomemset:__TI_zero_init_nomemset)
-                  0000c8aa    00000012                            : copy_decompress_none.c.obj (.text:decompress:none:__TI_decompress_none)
-                  0000c8bc    00000012                            : memcpy.c.obj (.text:memcpy)
-                  0000c8ce    00000008                            : isr_trap.asm.obj (.text:_isr:__TI_ISR_TRAP)
-                  0000c8d6    00000006                            : exit.c.obj (.text:abort)
-                  0000c8dc    00000004                            : pre_init.c.obj (.text:_system_pre_init)
-                  0000c8e0    00000002                            : startup.c.obj (.text:_system_post_cinit)
+.text      0    0000c646    00000f32     
+                  0000c646    000002b8     tasks.obj (.text:taskManager)
+                  0000c8fe    000001f0     interpreter.obj (.text:interpreter)
+                  0000caee    00000168     interrupts.obj (.text:USCIA0Interrupt)
+                  0000cc56    00000144     tasks.obj (.text:task_1)
+                  0000cd9a    00000122     tasks.obj (.text:task_2)
+                  0000cebc    0000010a     lexer.obj (.text:lexer)
+                  0000cfc6    000000f0     tasks.obj (.text:taskSleep)
+                  0000d0b6    000000b8     tasks.obj (.text:task_3)
+                  0000d16e    0000006e     rts430x_sc_sd_eabi.lib : copy_decompress_lzss.c.obj (.text:decompress:lzss:__TI_decompress_lzss)
+                  0000d1dc    0000005a     tasks.obj (.text:taskControl)
+                  0000d236    00000056     string.obj (.text:binToAscii)
+                  0000d28c    00000056     main.obj (.text:main)
+                  0000d2e2    00000052     rts430x_sc_sd_eabi.lib : autoinit.c.obj (.text:__TI_auto_init_nobinit_nopinit_hold_wdt:__TI_auto_init_nobinit_nopinit_hold_wdt)
+                  0000d334    00000044     uart.obj (.text:uartTx)
+                  0000d378    00000042     interrupts.obj (.text:RTCIntervalInterrupt)
+                  0000d3ba    00000038     gpios.obj (.text:gpiosInit)
+                  0000d3f2    00000032     tasks.obj (.text:taskTimeoutLock)
+                  0000d424    00000030     uart.obj (.text:uartInit)
+                  0000d454    0000002e     clocks.obj (.text:startRtcClk)
+                  0000d482    0000002c     rts430x_sc_sd_eabi.lib : div16s.asm.obj (.text)
+                  0000d4ae    00000028     clocks.obj (.text:startXt1Clk)
+                  0000d4d6    0000001c     rts430x_sc_sd_eabi.lib : boot.c.obj (.text:_c_int00_noargs)
+                  0000d4f2    00000016                            : div16u.asm.obj (.text)
+                  0000d508    00000014                            : copy_zero_init.c.obj (.text:decompress:ZI:__TI_zero_init)
+                  0000d51c    00000014                            : mult16.asm.obj (.text)
+                  0000d530    00000012                            : copy_decompress_none.c.obj (.text:decompress:none:__TI_decompress_none)
+                  0000d542    00000012                            : memcpy.c.obj (.text:memcpy)
+                  0000d554    0000000a     tasks.obj (.text:task_4)
+                  0000d55e    00000008     rts430x_sc_sd_eabi.lib : isr_trap.asm.obj (.text:_isr:__TI_ISR_TRAP)
+                  0000d566    00000006                            : exit.c.obj (.text:abort)
+                  0000d56c    00000006     power.obj (.text:powerInit)
+                  0000d572    00000004     rts430x_sc_sd_eabi.lib : pre_init.c.obj (.text:_system_pre_init)
+                  0000d576    00000002                            : startup.c.obj (.text:_system_post_cinit)
 
-.bss       0    00002000    00000052     UNINITIALIZED
-                  00002000    00000012     tasks.obj (.bss)
-                  00002012    00000010     tasks.obj (.bss:task_1_stack)
-                  00002022    00000010     tasks.obj (.bss:task_2_stack)
-                  00002032    00000010     tasks.obj (.bss:task_3_stack)
-                  00002042    00000010     tasks.obj (.bss:task_4_stack)
+.bss       0    00002000    000005a4     UNINITIALIZED
+                  00002000    00000400     tasks.obj (.bss:program)
+                  00002400    00000080     (.common:strVars)
+                  00002480    00000080     (.common:uartTxBuf)
+                  00002500    00000020     (.common:tokenTree)
+                  00002520    00000020     (.common:uartRxBuf)
+                  00002540    00000010     tasks.obj (.bss:task_1_stack)
+                  00002550    00000010     tasks.obj (.bss:task_2_stack)
+                  00002560    00000010     tasks.obj (.bss:task_3_stack)
+                  00002570    00000010     tasks.obj (.bss)
+                  00002580    00000010     (.common:task_4_stack)
+                  00002590    00000008     interrupts.obj (.bss)
+                  00002598    00000002     interpreter.obj (.bss)
+                  0000259a    00000002     (.common:strNum)
+                  0000259c    00000002     (.common:strVarsIndex)
+                  0000259e    00000002     (.common:taskManager_stack_4)
+                  000025a0    00000002     (.common:task_4_stack_size)
+                  000025a2    00000002     (.common:tokenTreeIndex)
 
-.data      0    00002052    00000012     UNINITIALIZED
-                  00002052    00000012     tasks.obj (.data)
+.data      0    000025a4    00000162     UNINITIALIZED
+                  000025a4    00000088     tasks.obj (.data:help)
+                  0000262c    0000006f     tasks.obj (.data:key_words)
+                  0000269b    00000001     --HOLE--
+                  0000269c    00000028     lexer.obj (.data:token)
+                  000026c4    00000012     tasks.obj (.data)
+                  000026d6    0000000c     main.obj (.data:banner)
+                  000026e2    00000008     tasks.obj (.data:version)
+                  000026ea    00000007     tasks.obj (.data:line)
+                  000026f1    00000001     --HOLE--
+                  000026f2    00000007     tasks.obj (.data:print)
+                  000026f9    00000001     --HOLE--
+                  000026fa    00000005     tasks.obj (.data:prompt)
+                  000026ff    00000001     --HOLE--
+                  00002700    00000003     tasks.obj (.data:crlf)
+                  00002703    00000001     --HOLE--
+                  00002704    00000002     interpreter.obj (.data)
 
 .stack     0    00002760    000000a0     UNINITIALIZED
                   00002760    00000002     rts430x_sc_sd_eabi.lib : boot.c.obj (.stack)
@@ -163,7 +204,7 @@ USCI_B0    0    0000ffea    00000002
                   0000ffea    00000002     rts430x_sc_sd_eabi.lib : int49.asm.obj (.int49)
 
 USCI_A0    0    0000ffec    00000002     
-                  0000ffec    00000002     rts430x_sc_sd_eabi.lib : int50.asm.obj (.int50)
+                  0000ffec    00000002     interrupts.obj (.int50)
 
 WDT        0    0000ffee    00000002     
                   0000ffee    00000002     rts430x_sc_sd_eabi.lib : int51.asm.obj (.int51)
@@ -207,19 +248,27 @@ MODULE SUMMARY
        Module                       code   ro data   rw data
        ------                       ----   -------   -------
     .\
-       tasks.obj                    704    0         100    
-       clocks.obj                   74     0         0      
-       interrupts.obj               66     2         0      
-       gpios.obj                    52     0         0      
-       main.obj                     32     0         0      
+       tasks.obj                    1884   0         1403   
+       lexer.obj                    266    144       206    
+       interrupts.obj               426    4         168    
+       interpreter.obj              496    62        4      
+       uart.obj                     116    0         0      
+       main.obj                     86     0         12     
+       clocks.obj                   86     0         0      
+       string.obj                   86     0         0      
+       gpios.obj                    56     0         0      
+       power.obj                    6      0         0      
     +--+----------------------------+------+---------+---------+
-       Total:                       928    2         100    
+       Total:                       3508   210       1793   
                                                             
     C:\ti\ccs1110\ccs\tools\compiler\ti-cgt-msp430_21.6.0.LTS\lib\rts430x_sc_sd_eabi.lib
        copy_decompress_lzss.c.obj   110    0         0      
        autoinit.c.obj               82     0         0      
+       div16s.asm.obj               44     0         0      
        boot.c.obj                   28     2         0      
+       div16u.asm.obj               22     0         0      
        copy_zero_init.c.obj         20     0         0      
+       mult16.asm.obj               20     0         0      
        copy_decompress_none.c.obj   18     0         0      
        memcpy.c.obj                 18     0         0      
        isr_trap.asm.obj             8      0         0      
@@ -230,7 +279,6 @@ MODULE SUMMARY
        int47.asm.obj                0      2         0      
        int48.asm.obj                0      2         0      
        int49.asm.obj                0      2         0      
-       int50.asm.obj                0      2         0      
        int51.asm.obj                0      2         0      
        int53.asm.obj                0      2         0      
        int54.asm.obj                0      2         0      
@@ -240,24 +288,24 @@ MODULE SUMMARY
        int58.asm.obj                0      2         0      
        startup.c.obj                2      0         0      
     +--+----------------------------+------+---------+---------+
-       Total:                       296    28        0      
+       Total:                       382    26        0      
                                                             
        Stack:                       0      0         160    
-       Linker Generated:            0      25        0      
+       Linker Generated:            0      376       0      
     +--+----------------------------+------+---------+---------+
-       Grand Total:                 1224   55        260    
+       Grand Total:                 3890   612       1953   
 
 
 LINKER GENERATED COPY TABLES
 
-__TI_cinit_table @ 0000c412 records: 2, size/record: 4, table size: 8
-	.data: load addr=0000c400, load size=00000007 bytes, run addr=00002052, run size=00000012 bytes, compression=lzss
-	.bss: load addr=0000c40e, load size=00000004 bytes, run addr=00002000, run size=00000052 bytes, compression=zero_init
+__TI_cinit_table @ 0000c570 records: 2, size/record: 4, table size: 8
+	.data: load addr=0000c400, load size=00000166 bytes, run addr=000025a4, run size=00000162 bytes, compression=copy
+	.bss: load addr=0000c56c, load size=00000004 bytes, run addr=00002000, run size=000005a4 bytes, compression=zero_init
 
 
 LINKER GENERATED HANDLER TABLE
 
-__TI_handler_table @ 0000c408 records: 3, size/record: 2, table size: 6
+__TI_handler_table @ 0000c566 records: 3, size/record: 2, table size: 6
 	index: 0, handler: __TI_zero_init
 	index: 1, handler: __TI_decompress_lzss
 	index: 2, handler: __TI_decompress_none
@@ -345,7 +393,7 @@ address   name
 00000672  BAKMEM9                                
 00000673  BAKMEM9_H                              
 00000672  BAKMEM9_L                              
-0000c8d6  C$$EXIT                                
+0000d566  C$$EXIT                                
 000002ee  CAPTIO0CTL                             
 000002ef  CAPTIO0CTL_H                           
 000002ee  CAPTIO0CTL_L                           
@@ -619,7 +667,7 @@ address   name
 000003c4  RTCIV                                  
 000003c5  RTCIV_H                                
 000003c4  RTCIV_L                                
-0000c71c  RTCIntervalInterrupt                   
+0000d378  RTCIntervalInterrupt                   
 000003c8  RTCMOD                                 
 000003c9  RTCMOD_H                               
 000003c8  RTCMOD_L                               
@@ -773,20 +821,21 @@ address   name
 0000054e  UCB0TXBUF                              
 0000054f  UCB0TXBUF_H                            
 0000054e  UCB0TXBUF_L                            
+0000caee  USCIA0Interrupt                        
 000001cc  WDTCTL                                 
 000001cd  WDTCTL_H                               
 000001cc  WDTCTL_L                               
 00002800  __STACK_END                            
 000000a0  __STACK_SIZE                           
-0000c412  __TI_CINIT_Base                        
-0000c41a  __TI_CINIT_Limit                       
-0000c41a  __TI_CINIT_Warm                        
-0000c408  __TI_Handler_Table_Base                
-0000c40e  __TI_Handler_Table_Limit               
-0000c8ce  __TI_ISR_TRAP                          
-0000c6ca  __TI_auto_init_nobinit_nopinit_hold_wdt
-0000c65c  __TI_decompress_lzss                   
-0000c8aa  __TI_decompress_none                   
+0000c570  __TI_CINIT_Base                        
+0000c578  __TI_CINIT_Limit                       
+0000c578  __TI_CINIT_Warm                        
+0000c566  __TI_Handler_Table_Base                
+0000c56c  __TI_Handler_Table_Limit               
+0000d55e  __TI_ISR_TRAP                          
+0000d2e2  __TI_auto_init_nobinit_nopinit_hold_wdt
+0000d16e  __TI_decompress_lzss                   
+0000d530  __TI_decompress_none                   
 0000ffe2  __TI_int45                             
 0000ffe4  __TI_int46                             
 0000ffe6  __TI_int47                             
@@ -804,28 +853,52 @@ address   name
 ffffffff  __TI_pprof_out_hndl                    
 ffffffff  __TI_prof_data_size                    
 ffffffff  __TI_prof_data_start                   
-0000c896  __TI_zero_init_nomemset                
+0000d508  __TI_zero_init                         
 ffffffff  __c_args__                             
-0000c85e  _c_int00_noargs                        
+0000d482  __mspabi_divi                          
+0000d4f2  __mspabi_divu                          
+0000d51c  __mspabi_mpyi                          
+0000d51c  __mspabi_mpyi_sw                       
+0000d482  __mspabi_remi                          
+0000d4f2  __mspabi_remu                          
+0000d4d6  _c_int00_noargs                        
 0000fffe  _reset_vector                          
 00002760  _stack                                 
-0000c8e0  _system_post_cinit                     
-0000c8dc  _system_pre_init                       
-0000c8d6  abort                                  
-0000c75e  initGpios                              
-0000c83e  main                                   
-0000c8bc  memcpy                                 
-0000c7c4  startRtcClk                            
-0000c87a  startXt1Clk                            
-0000c41a  taskManager                            
-00002052  task_1_status                          
-0000205a  task_1_timeout                         
-00002054  task_2_status                          
-0000205c  task_2_timeout                         
-00002056  task_3_status                          
-0000205e  task_3_timeout                         
-00002058  task_4_status                          
-00002060  task_4_timeout                         
+0000d576  _system_post_cinit                     
+0000d572  _system_pre_init                       
+0000d566  abort                                  
+0000d236  binToAscii                             
+0000d3ba  gpiosInit                              
+0000c8fe  interpreter                            
+0000cebc  lexer                                  
+0000d28c  main                                   
+0000d542  memcpy                                 
+0000d56c  powerInit                              
+0000d454  startRtcClk                            
+0000d4ae  startXt1Clk                            
+0000259a  strNum                                 
+00002400  strVars                                
+0000259c  strVarsIndex                           
+0000d1dc  taskControl                            
+0000c646  taskManager                            
+0000259e  taskManager_stack_4                    
+0000cfc6  taskSleep                              
+000026c4  task_1_status                          
+000026cc  task_1_timeout                         
+000026c6  task_2_status                          
+000026ce  task_2_timeout                         
+000026c8  task_3_status                          
+000026d0  task_3_timeout                         
+00002580  task_4_stack                           
+000025a0  task_4_stack_size                      
+000026ca  task_4_status                          
+000026d2  task_4_timeout                         
+00002500  tokenTree                              
+000025a2  tokenTreeIndex                         
+0000d424  uartInit                               
+00002520  uartRxBuf                              
+0000d334  uartTx                                 
+00002480  uartTxBuf                              
 
 
 GLOBAL SYMBOLS: SORTED BY Symbol Address 
@@ -1340,38 +1413,63 @@ address   name
 0000071e  ADCIV                                  
 0000071e  ADCIV_L                                
 0000071f  ADCIV_H                                
-00002052  task_1_status                          
-00002054  task_2_status                          
-00002056  task_3_status                          
-00002058  task_4_status                          
-0000205a  task_1_timeout                         
-0000205c  task_2_timeout                         
-0000205e  task_3_timeout                         
-00002060  task_4_timeout                         
+00002400  strVars                                
+00002480  uartTxBuf                              
+00002500  tokenTree                              
+00002520  uartRxBuf                              
+00002580  task_4_stack                           
+0000259a  strNum                                 
+0000259c  strVarsIndex                           
+0000259e  taskManager_stack_4                    
+000025a0  task_4_stack_size                      
+000025a2  tokenTreeIndex                         
+000026c4  task_1_status                          
+000026c6  task_2_status                          
+000026c8  task_3_status                          
+000026ca  task_4_status                          
+000026cc  task_1_timeout                         
+000026ce  task_2_timeout                         
+000026d0  task_3_timeout                         
+000026d2  task_4_timeout                         
 00002760  _stack                                 
 00002800  __STACK_END                            
-0000c408  __TI_Handler_Table_Base                
-0000c40e  __TI_Handler_Table_Limit               
-0000c412  __TI_CINIT_Base                        
-0000c41a  __TI_CINIT_Limit                       
-0000c41a  __TI_CINIT_Warm                        
-0000c41a  taskManager                            
-0000c65c  __TI_decompress_lzss                   
-0000c6ca  __TI_auto_init_nobinit_nopinit_hold_wdt
-0000c71c  RTCIntervalInterrupt                   
-0000c75e  initGpios                              
-0000c7c4  startRtcClk                            
-0000c83e  main                                   
-0000c85e  _c_int00_noargs                        
-0000c87a  startXt1Clk                            
-0000c896  __TI_zero_init_nomemset                
-0000c8aa  __TI_decompress_none                   
-0000c8bc  memcpy                                 
-0000c8ce  __TI_ISR_TRAP                          
-0000c8d6  C$$EXIT                                
-0000c8d6  abort                                  
-0000c8dc  _system_pre_init                       
-0000c8e0  _system_post_cinit                     
+0000c566  __TI_Handler_Table_Base                
+0000c56c  __TI_Handler_Table_Limit               
+0000c570  __TI_CINIT_Base                        
+0000c578  __TI_CINIT_Limit                       
+0000c578  __TI_CINIT_Warm                        
+0000c646  taskManager                            
+0000c8fe  interpreter                            
+0000caee  USCIA0Interrupt                        
+0000cebc  lexer                                  
+0000cfc6  taskSleep                              
+0000d16e  __TI_decompress_lzss                   
+0000d1dc  taskControl                            
+0000d236  binToAscii                             
+0000d28c  main                                   
+0000d2e2  __TI_auto_init_nobinit_nopinit_hold_wdt
+0000d334  uartTx                                 
+0000d378  RTCIntervalInterrupt                   
+0000d3ba  gpiosInit                              
+0000d424  uartInit                               
+0000d454  startRtcClk                            
+0000d482  __mspabi_divi                          
+0000d482  __mspabi_remi                          
+0000d4ae  startXt1Clk                            
+0000d4d6  _c_int00_noargs                        
+0000d4f2  __mspabi_divu                          
+0000d4f2  __mspabi_remu                          
+0000d508  __TI_zero_init                         
+0000d51c  __mspabi_mpyi                          
+0000d51c  __mspabi_mpyi_sw                       
+0000d530  __TI_decompress_none                   
+0000d542  memcpy                                 
+0000d55e  __TI_ISR_TRAP                          
+0000d566  C$$EXIT                                
+0000d566  abort                                  
+0000d56c  powerInit                              
+0000d572  _system_pre_init                       
+0000d576  _system_post_cinit                     
 0000ffe2  __TI_int45                             
 0000ffe4  __TI_int46                             
 0000ffe6  __TI_int47                             
@@ -1392,4 +1490,4 @@ ffffffff  __TI_prof_data_size
 ffffffff  __TI_prof_data_start                   
 ffffffff  __c_args__                             
 
-[559 symbols]
+[584 symbols]

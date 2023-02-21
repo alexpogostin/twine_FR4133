@@ -12,9 +12,14 @@ GEN_CMDS__FLAG :=
 ORDERED_OBJS += \
 "./clocks.obj" \
 "./gpios.obj" \
+"./interpreter.obj" \
 "./interrupts.obj" \
+"./lexer.obj" \
 "./main.obj" \
+"./power.obj" \
+"./string.obj" \
 "./tasks.obj" \
+"./uart.obj" \
 "../lnk_msp430fr4133.cmd" \
 $(GEN_CMDS__FLAG) \
 -llibc.a \
@@ -158,8 +163,8 @@ twine_FR4133.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "clocks.obj" "gpios.obj" "interrupts.obj" "main.obj" "tasks.obj" 
-	-$(RM) "clocks.d" "gpios.d" "interrupts.d" "main.d" "tasks.d" 
+	-$(RM) "clocks.obj" "gpios.obj" "interpreter.obj" "interrupts.obj" "lexer.obj" "main.obj" "power.obj" "string.obj" "tasks.obj" "uart.obj" 
+	-$(RM) "clocks.d" "gpios.d" "interpreter.d" "interrupts.d" "lexer.d" "main.d" "power.d" "string.d" "tasks.d" "uart.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 
