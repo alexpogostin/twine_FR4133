@@ -14,13 +14,16 @@
 /* global declarations                                                       */
 /*****************************************************************************/
 unsigned char strVars[4][32];
-int intVars[4];
+int intVars[4][8];
 
 unsigned char tokenTree[MAX_TOKEN_TREE_SIZE];
 int tokenTreeIndex;
 
 int strVarsIndex;
 int strNum;
+
+int intVarsIndex;
+int intNum;
 
 /*****************************************************************************/
 /* static (local) declarations                                               */
@@ -69,6 +72,22 @@ int lexer(unsigned char *program)
 
         while(*(p) == 0x20)
             p++;
+
+        if(*(p) == 0x28)
+        {
+            p++;
+            i = 0;
+            while(*(p) != 0x29)
+            {
+                intVars[intVarsIndex][i++] = *(p++);
+            }
+            p++;
+            intVarsIndex++;
+            tokenTree[tokenTreeIndex++] = 'V';
+            tokenTree[tokenTreeIndex++] = intNum++;
+            tokenNum = 0;
+            continue;
+        }
 
         if(*(p) == 0x22)
         {

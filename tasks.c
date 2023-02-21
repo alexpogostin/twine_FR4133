@@ -21,6 +21,10 @@ extern unsigned char strVars[4][32];
 extern int strVarsIndex;
 extern int strNum;
 
+extern unsigned char intVars[4][8];
+extern int intVarsIndex;
+extern int intNum;
+
 /*****************************************************************************/
 /* global declarations                                                       */
 /*****************************************************************************/
@@ -605,6 +609,9 @@ short task_2(void) // edit mode task
     strVarsIndex = 0;
     strNum = 0x30;
 
+    intVarsIndex = 0;
+    intNum = 0x30;
+
     task_2_stack_size = ((taskManager_stack_2 - (unsigned short) __get_SP_register())>>1) + 1;
 
     while(uartRxBuf[j])
@@ -671,6 +678,10 @@ short task_3(void) // interpreter task
 
     strVarsIndex = 0;
     strNum = 0x30;
+
+    intVarsIndex = 0;
+    intNum = 0x30;
+
     tokenTreeIndex = 0;
 
     for(i=0;i<4;i++)
@@ -678,6 +689,14 @@ short task_3(void) // interpreter task
         for(j=0;j<32;j++)
         {
             strVars[i][j] = 0x00;
+        }
+    }
+
+    for(i=0;i<4;i++)
+    {
+        for(j=0;j<8;j++)
+        {
+            intVars[i][j] = 0x00;
         }
     }
 

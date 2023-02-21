@@ -30,6 +30,7 @@ static unsigned short runState;
 /*****************************************************************************/
 int interpreter(unsigned char *tokenTree) // abstract syntax tree
 {
+    static int repeatCount;
     static int i = 0;
     int j = 0;
     int k = 0;
@@ -61,6 +62,12 @@ int interpreter(unsigned char *tokenTree) // abstract syntax tree
     {
         case 'A': // is
         debug(uartTxBuf, 0, "A\r\n");
+        runState = tokenTree[++i];
+        break;
+
+        case 'B': // repeat
+        debug(uartTxBuf, 0, "B\r\n");
+        repeatCount++;
         runState = tokenTree[++i];
         break;
 
@@ -122,10 +129,18 @@ int interpreter(unsigned char *tokenTree) // abstract syntax tree
         i = 0;
         break;
 
-        case 'X': // string #1
+        case 'X': // string
         debug(uartTxBuf, 0, "1\r\n");
         j = tokenTree[++i];
         uartTx(uartTxBuf, 0, &strVars[j & 0x0F][0]);
+        uartTx(uartTxBuf, 0, CRLF);
+        runState = tokenTree[++i];
+        break;
+
+        case 'V': // int
+        debug(uartTxBuf, 0, "1\r\n");
+        j = tokenTree[++i];
+        uartTx(uartTxBuf, 0, &intVars[j & 0x0F][0]);
         uartTx(uartTxBuf, 0, CRLF);
         runState = tokenTree[++i];
         break;
