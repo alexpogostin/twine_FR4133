@@ -14,7 +14,7 @@
 /* global declarations                                                       */
 /*****************************************************************************/
 unsigned char strVars[4][32];
-int intVars[4][8];
+unsigned char intVars[4][8];
 
 unsigned char tokenTree[MAX_TOKEN_TREE_SIZE];
 int tokenTreeIndex;
@@ -76,9 +76,14 @@ int lexer(unsigned char *program)
         if(*(p) == 0x28)
         {
             p++;
+
             i = 0;
             while(*(p) != 0x29)
             {
+                if(*(p) == 0x0D)
+                {
+                    goto endOfLineReached;
+                }
                 intVars[intVarsIndex][i++] = *(p++);
             }
             p++;
@@ -95,6 +100,10 @@ int lexer(unsigned char *program)
             i = 0;
             while(*(p) != 0x22)
             {
+                if(*(p) == 0x0D)
+                {
+                    goto endOfLineReached;
+                }
                 strVars[strVarsIndex][i++] = *(p++);
             }
             p++;
@@ -125,4 +134,7 @@ tokenNotFound:
     }
 
     return TRUE;
+
+endOfLineReached:
+    return FALSE;
 }

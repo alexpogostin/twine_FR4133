@@ -17,8 +17,6 @@
 #define ENABLE 1
 #define DISABLE 0
 
-char* binToAscii(char* line, short val);
-
 void taskManager(void);
 void taskSleep(int);
 void taskControl(int task, short control);
