@@ -32,3 +32,43 @@ char* binToAscii(char* line, short val)
 
     return line;
 }
+
+/*****************************************************************************/
+int asciiToBin(char* line)
+{
+    int i;
+    int len = 0;
+    int mult[4] = {1000, 100, 10, 1};
+    int total = 0;
+
+    if(line[0] == 0x00)
+    {
+        return -1;
+    }
+
+    len++;
+
+    for(i=len;i<8;i++)
+    {
+        if(line[i] == 0)
+        {
+            break;
+        }
+        len++;
+    }
+
+    for(i=0;i<len;i++)
+    {
+        if(line[i] < 0x30 || line[i] > 0x39)
+        {
+            return -1;
+        }
+    }
+
+    for(i=0;i<len;i++)
+    {
+        total = total +((line[i] & 0x0F) * mult[i+(4-len)]);
+    }
+
+    return total;
+}

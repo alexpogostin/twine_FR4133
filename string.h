@@ -28,5 +28,6 @@
 #define VERSION "v:1.1"
 
 char* binToAscii(char* line, short val);
+int asciiToBin(char* line);
 
 #endif
