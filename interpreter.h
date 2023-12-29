@@ -11,7 +11,13 @@
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
 
-int interpreter(unsigned char *token_tree);
-int interpreter_ast(unsigned char *token_tree);
+int interpreter(int *tokenTreeIndex, unsigned char *token_tree);
+int _uart(int *tokenTreeIndex, unsigned char *tokenTree);
+int _string(int *tokenTreeIndex, unsigned char *tokenTree);
+int _repeat(int *tokenTreeIndex, unsigned char *tokenTree);
+int _value(int *val, int *tokenTreeIndex, unsigned char *tokenTree);
+int _finish(int *tokenTreeIndex);
+int _rerun(int *tokenTreeIndex);
+int _end(int *tokenTreeIndex, unsigned char *tokenTree);
 
 #endif

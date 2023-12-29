@@ -14,6 +14,7 @@
 /* global declarations                                                       */
 /*****************************************************************************/
 extern unsigned char strVars[4][32];
+extern unsigned char intVars[4][8];
 
 extern unsigned char uartRxBuf[UART_RX_BUF_SIZE];
 extern unsigned char uartTxBuf[UART_TX_BUF_ARRAY_SIZE][UART_TX_BUF_SIZE];
@@ -25,199 +26,265 @@ extern unsigned short taskManager_stack_4;
 /*****************************************************************************/
 /* static (local) declarations                                               */
 /*****************************************************************************/
-static unsigned short runState;
+unsigned short runState;
+int blockRunIndex;
+int val;
+int blockRepeat;
 
 /*****************************************************************************/
-int interpreter(unsigned char *tokenTree) // abstract syntax tree
+int interpreter(int *tokenTreeIndex, unsigned char *tokenTree) // abstract syntax tree
 {
-    static int repeatCount;
-    static int i = 0;
-    int j = 0;
-    int k = 0;
+    unsigned short i = 0;
+    unsigned short j = 0;
 
     task_4_stack_size = ((taskManager_stack_4 - (unsigned short) __get_SP_register())>>1) + 1;
 
-    if(!i)
+    while(uartRxBuf[i])
     {
-        runState = tokenTree[0];
-    }
-
-    while(uartRxBuf[j])
-    {
-        if(uartRxBuf[j] == CTRL_C)
+        if(uartRxBuf[i] == CTRL_C)
         {
-            for(k=0;k<UART_RX_BUF_SIZE;k++)
+            for(j=0;j<UART_RX_BUF_SIZE;j++)
             {
-                uartRxBuf[k] = NULL;
+                uartRxBuf[j] = NULL;
             }
             debug(uartTxBuf, 0, "ctrl-c\r\n");
             uartRxBuf[0] = CR;
             runState = 0x01; // program terminated
             break;
         }
-        j++;
+        i++;
     };
+
+    if(*(tokenTreeIndex) == 0)
+    {
+        runState = tokenTree[0];
+    }
+
+    // get value
+    // get run state from token after value, "next run state"
+    // run state = token token end ".", TOKEN_END="T"
+    // 1: uart "Hello World"
+    // 2: repeat (10).
+    // 3: uart "This is a test"
+    // 4: uart "What a world"
+    // 5: repeat (10).
+
+    // BV0 HX0
+    // repeat, value, 10, uart, string, "test"
 
     switch(runState)
     {
-        case 'A': // is
-        debug(uartTxBuf, 0, "A\r\n");
-        runState = tokenTree[++i];
-        break;
-
-        case 'B': // repeat
-        debug(uartTxBuf, 0, "B\r\n");
-        repeatCount++;
-        runState = tokenTree[++i];
-        break;
-
-        case 'D': // pause
-        debug(uartTxBuf, 0, "D\r\n");
-        taskSleep(1);
-        runState = tokenTree[++i];
-        break;
-
-        case 'H': // out
+        case 'H': // 0x48 uart
         debug(uartTxBuf, 0, "H\r\n");
-        runState = tokenTree[++i];
+        runState = _uart(tokenTreeIndex, tokenTree);
         break;
 
-        case 'K': // yes:
-        debug(uartTxBuf, 0, "K\r\n");
-        runState = tokenTree[++i];
+        case 'X': // 0x58 string
+        debug(uartTxBuf, 0, "X\r\n");
+        runState = _string(tokenTreeIndex, tokenTree);
         break;
 
-        case 'L': // no:
-        debug(uartTxBuf, 0, "L\r\n");
-        runState = tokenTree[++i];
+        case 'B': // 0x42 repeat
+        debug(uartTxBuf, 0, "B\r\n");
+        runState = _repeat(tokenTreeIndex, tokenTree);
         break;
 
-        case 'M': // led1
-        debug(uartTxBuf, 0, "M\r\n");
-        runState = tokenTree[++i];
+        case 'V': // 0x56 value
+        debug(uartTxBuf, 0, "V\r\n");
+        runState = _value(&val, tokenTreeIndex, tokenTree);
+        blockRepeat = val;
+        blockRunIndex = *(tokenTreeIndex);
         break;
 
-        case 'N': // led2
-        debug(uartTxBuf, 0, "N\r\n");
-        runState = tokenTree[++i];
-        break;
-
-        case 'O': // but1
-        debug(uartTxBuf, 0, "O\r\n");
-        runState = tokenTree[++i];
-        break;
-
-        case 'P': // but2
-        debug(uartTxBuf, 0, "P\r\n");
-        runState = tokenTree[++i];
-        break;
-
-        case 'Q': // pressed
-        debug(uartTxBuf, 0, "Q\r\n");
-        runState = tokenTree[++i];
-        break;
-
-        case 'R': // finish
-        uartTx(uartTxBuf, 0, "program finished\r\n");
-        taskControl(TASK4, DISABLE);
-        taskControl(TASK1, ENABLE);
-        i = 0;
-        break;
-
-        case 'S': // rerun
+        case 'S': // 0x53 rerun
         debug(uartTxBuf, 0, "S\r\n");
-        i = 0;
+        _rerun(tokenTreeIndex);
         break;
 
-        case 'X': // string
-        debug(uartTxBuf, 0, "1\r\n");
-        j = tokenTree[++i];
-        uartTx(uartTxBuf, 0, &strVars[j & 0x0F][0]);
-        uartTx(uartTxBuf, 0, CRLF);
-        runState = tokenTree[++i];
+        case 'T': // 0x54 end of block
+        debug(uartTxBuf, 0, "T\r\n");
+        blockRepeat--;
+        if(blockRepeat <= 0)
+        {
+            runState = _end(tokenTreeIndex, tokenTree);
+        }
+        else
+        {
+            *(tokenTreeIndex) = blockRunIndex;
+            runState = tokenTree[*(tokenTreeIndex)];
+        }
         break;
 
-        case 'V': // int
-        debug(uartTxBuf, 0, "1\r\n");
-        j = tokenTree[++i];
-        uartTx(uartTxBuf, 0, &intVars[j & 0x0F][0]);
-        uartTx(uartTxBuf, 0, CRLF);
-        runState = tokenTree[++i];
+        case 'D': // 0x44 pause
+        debug(uartTxBuf, 0, "D\r\n");
+        //taskSleep(1);
+        runState = _end(tokenTreeIndex, tokenTree);
+        break;
+
+        case 'R': // 0x52 finish
+        uartTx(uartTxBuf, 0, "program finished\r\n");
+        _finish(tokenTreeIndex);
         break;
 
         case 0x01: // ctrl-c
         uartTx(uartTxBuf, 0, "program terminated\r\n");
-        taskControl(TASK4, DISABLE);
-        taskControl(TASK1, ENABLE);
-        i = 0;
+        _finish(tokenTreeIndex);
         break;
+
+#if 0
+        case 'A': // is
+        debug(uartTxBuf, 0, "A\r\n");
+        runState = tokenTree[tokenTreeIndex++];
+        break;
+
+        case 'K': // yes:
+        debug(uartTxBuf, 0, "K\r\n");
+        runState = tokenTree[tokenTreeIndex++];
+        break;
+
+        case 'L': // no:
+        debug(uartTxBuf, 0, "L\r\n");
+        runState = tokenTree[tokenTreeIndex++];
+        break;
+
+        case 'M': // led1
+        debug(uartTxBuf, 0, "M\r\n");
+        runState = tokenTree[tokenTreeIndex++];
+        break;
+
+        case 'N': // led2
+        debug(uartTxBuf, 0, "N\r\n");
+        runState = tokenTree[tokenTreeIndex++];
+        break;
+
+        case 'O': // but1
+        debug(uartTxBuf, 0, "O\r\n");
+        runState = tokenTree[tokenTreeIndex++];
+        break;
+
+        case 'P': // but2
+        debug(uartTxBuf, 0, "P\r\n");
+        runState = tokenTree[tokenTreeIndex++];
+        break;
+
+        case 'Q': // pressed
+        debug(uartTxBuf, 0, "Q\r\n");
+        runState = tokenTree[tokenTreeIndex++];
+        break;
+
+#endif
 
         default:
         uartTx(uartTxBuf, 0, "program error\r\n");
-        taskControl(TASK4, DISABLE);
-        taskControl(TASK1, ENABLE);
-        i = 0;
+        _finish(tokenTreeIndex);
         break;
     }
 
     return 0;
+
 }
 
 /*****************************************************************************/
-/* TODO (maybe?): include calls below in switch(...) above??
+//
 /*****************************************************************************/
+int _uart(int *tokenTreeIndex, unsigned char *tokenTree)
+{
+    int runState;
+
+    if(tokenTree[++(*tokenTreeIndex)] == 'X') // is next token a string
+    {
+        runState = tokenTree[(*tokenTreeIndex)]; // set runState to string
+    }
+    else
+    {
+        runState = 0xFF;
+    }
+
+    return runState;
+}
 
 /*****************************************************************************/
-int _is(void) // but1 or but2
+int _string(int *tokenTreeIndex, unsigned char *tokenTree)
 {
-    // RULE: 'is' only tests inputs, for example but1 or but2.
+    int i;
+
+    if(tokenTree[(*tokenTreeIndex - 1)] == 'H') // is previous token uart
+    {
+        i = tokenTree[++(*tokenTreeIndex)];
+        uartTx(uartTxBuf, 0, &strVars[i & 0x0F][0]);
+        uartTx(uartTxBuf, 0, CRLF);
+        i = tokenTree[++(*tokenTreeIndex)];
+    }
+    else
+    {
+        ++(*tokenTreeIndex);
+        i = 0xFF;
+    }
+
+    return i; // runState
+}
+
+
+/*****************************************************************************/
+int _repeat(int *tokenTreeIndex, unsigned char *tokenTree)
+{
+    int runState;
+
+    if(tokenTree[++(*tokenTreeIndex)] == 'V') // is next token a value
+    {
+        runState = tokenTree[(*tokenTreeIndex)]; // set runState to value
+    }
+    else
+    {
+        runState = 0xFF;
+    }
+
+    return runState;
+}
+
+/*****************************************************************************/
+int _value(int *val, int *tokenTreeIndex, unsigned char *tokenTree)
+{
+    short i;
+
+    if(tokenTree[(*tokenTreeIndex - 1)] == 'B') // is previous token repeat
+    {
+        i = tokenTree[++(*tokenTreeIndex)];
+        //uartTx(uartTxBuf, 0, &intVars[i & 0x0F][0]);
+        //uartTx(uartTxBuf, 0, CRLF);
+        *(val) = asciiToBin(&intVars[i & 0x0F][0]);
+        i = tokenTree[++(*tokenTreeIndex)];
+    }
+    else
+    {
+        ++(*tokenTreeIndex);
+        i = 0xFF;
+    }
+
+    return i; // runState
+}
+
+/*****************************************************************************/
+int _end(int *tokenTreeIndex, unsigned char *tokenTree)
+{
+    int runState;
+    runState = tokenTree[++(*tokenTreeIndex)];
+    return runState;
+}
+
+/*****************************************************************************/
+int _finish(int *tokenTreeIndex)
+{
+    taskControl(TASK4, DISABLE);
+    taskControl(TASK1, ENABLE);
+    (*tokenTreeIndex) = 0;
     return TRUE;
 }
 
 /*****************************************************************************/
-int _equal(void)
+int _rerun(int *tokenTreeIndex)
 {
-    // RULE: can only set an output, for example led1 or led2
-    return TRUE;
-}
-
-/*****************************************************************************/
-int _yes(void)
-{
-    return TRUE;
-}
-
-/*****************************************************************************/
-int _no(void)
-{
-    return TRUE;
-}
-
-/*****************************************************************************/
-int _led1(void)
-{
-    // turn on or off led1
-    return TRUE;
-}
-
-/*****************************************************************************/
-int _led2(void)
-{
-    // turn on or off led2
-    return TRUE;
-}
-
-/*****************************************************************************/
-int _but1(void)
-{
-    // is but1 pressed?
-    return TRUE;
-}
-
-/*****************************************************************************/
-int _but2(void)
-{
-    // is but2 pressed?
+    (*tokenTreeIndex) = 0;
     return TRUE;
 }
 

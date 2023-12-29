@@ -34,7 +34,7 @@ char* binToAscii(char* line, short val)
 }
 
 /*****************************************************************************/
-int asciiToBin(char* line)
+int asciiToBin(unsigned char* line)
 {
     int i;
     int len = 0;
