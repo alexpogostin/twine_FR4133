@@ -25,7 +25,7 @@
 #define TOKEN_CALL    "\x04" "\x45" "call"    // E
 #define TOKEN_EQ      "\x01" "\x46" "="       // F
 #define TOKEN_IN      "\x02" "\x47" "in"      // G
-#define TOKEN_OUT     "\x03" "\x48" "out"     // H
+#define TOKEN_UART    "\x04" "\x48" "uart"    // H
 #define TOKEN_ON      "\x02" "\x49" "on"      // I
 #define TOKEN_OFF     "\x03" "\x4A" "off"     // J
 #define TOKEN_YES     "\x04" "\x4B" "yes:"    // K
@@ -37,8 +37,11 @@
 #define TOKEN_PRESSED "\x07" "\x51" "pressed" // Q
 #define TOKEN_FINISH  "\x06" "\x52" "finish"  // R
 #define TOKEN_RERUN   "\x05" "\x53" "rerun"   // S
+#define TOKEN_END     "\x01" "\x54" "."       // T
+#define TOKEN_LCD     "\x03" "\x55" "lcd"     // U
 #define TOKEN_FINAL   "\x00" "\x00" ""        // 0x00
 
 int lexer(unsigned char *program);
+int ast(unsigned char *tokenTree);
 
 #endif

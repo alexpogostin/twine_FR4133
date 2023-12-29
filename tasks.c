@@ -16,6 +16,7 @@
 extern unsigned char uartRxBuf[UART_RX_BUF_SIZE];
 extern unsigned char uartTxBuf[UART_TX_BUF_ARRAY_SIZE][UART_TX_BUF_SIZE];
 extern unsigned char tokenTree[MAX_TOKEN_TREE_SIZE];
+extern unsigned char tokenTreeAst[16];
 extern int tokenTreeIndex;
 extern unsigned char strVars[4][32];
 extern int strVarsIndex;
@@ -41,7 +42,7 @@ short task_4_timeout = 0;
 // special case task_4, for use inside interpreter.c 'pause'
 unsigned short taskManager_stack_4;
 unsigned short task_4_stack_size;
-unsigned short task_4_stack[8];
+unsigned short task_4_stack[16];
 
 /*****************************************************************************/
 /* static (local) declarations                                               */
@@ -66,6 +67,10 @@ static unsigned char edit_line[] = EDIT_LINE;
 static unsigned char prompt[]    = CRLF PROMPT;
 static unsigned char line[]      = CRLF EDIT_LINE;
 static unsigned char print[]     = PRINT_LINE;
+
+#pragma PERSISTENT(key_words)
+#pragma PERSISTENT(help)
+
 static unsigned char key_words[] = CRLF
                                   "is" CRLF
                                   "repeat" CRLF
@@ -74,7 +79,8 @@ static unsigned char key_words[] = CRLF
                                   "call" CRLF
                                   "=" CRLF
                                   "in" CRLF
-                                  "out" CRLF
+                                  "uart" CRLF
+                                  "lcd" CRLF
                                   "on" CRLF
                                   "off" CRLF
                                   "yes:" CRLF
@@ -94,7 +100,7 @@ static unsigned char help[]      = CRLF
                                   "r: run program" CRLF
                                   "l: list program" CRLF
                                   "--------------------" CRLF
-                                  ".: exit program edit";
+                                  "Esc CR: exit program edit";
 static unsigned char version[] = CRLF VERSION;
 
 static short lineNumber;
@@ -634,7 +640,7 @@ short task_2(void) // edit mode task
 
             for(i=0;i<j;i++)
             {
-                if(uartRxBuf[i] == '.') // exit edit thread
+                if(uartRxBuf[i] == 0x1B) // Esc exit edit thread
                 {
                     for(k=0;k<UART_RX_BUF_SIZE;k++)
                     {
@@ -724,7 +730,10 @@ short task_3(void) // interpreter task
 
     uartRxBuf[0] = CR;
 
+    ast((unsigned char*) &tokenTree);
+
     taskControl(TASK3, DISABLE);
+    tokenTreeIndex = 0;
     taskControl(TASK4, ENABLE);
 
     return 0;
@@ -733,7 +742,8 @@ short task_3(void) // interpreter task
 /*****************************************************************************/
 short task_4(void) // run task
 {
-    interpreter((unsigned char*) &tokenTree);
-
+    interpreter(&tokenTreeIndex, (unsigned char*) &tokenTreeAst);
+    //taskControl(TASK4, DISABLE);
+    //taskControl(TASK1, ENABLE);
     return 0;
 }

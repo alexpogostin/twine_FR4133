@@ -13,10 +13,13 @@
 /*****************************************************************************/
 /* global declarations                                                       */
 /*****************************************************************************/
+extern unsigned char uartTxBuf[UART_TX_BUF_ARRAY_SIZE][UART_TX_BUF_SIZE];
+
 unsigned char strVars[4][32];
 unsigned char intVars[4][8];
 
 unsigned char tokenTree[MAX_TOKEN_TREE_SIZE];
+unsigned char tokenTreeAst[16];
 int tokenTreeIndex;
 
 int strVarsIndex;
@@ -35,7 +38,7 @@ static unsigned char *token[MAX_NUM_TOKENS] = {TOKEN_IS,
                                                TOKEN_CALL,
                                                TOKEN_EQ,
                                                TOKEN_IN,
-                                               TOKEN_OUT,
+                                               TOKEN_UART,
                                                TOKEN_ON,
                                                TOKEN_OFF,
                                                TOKEN_YES,
@@ -47,6 +50,8 @@ static unsigned char *token[MAX_NUM_TOKENS] = {TOKEN_IS,
                                                TOKEN_PRESSED,
                                                TOKEN_FINISH,
                                                TOKEN_RERUN,
+                                               TOKEN_END,
+                                               TOKEN_LCD,
                                                TOKEN_FINAL,
                                                };
 
@@ -132,9 +137,117 @@ int lexer(unsigned char *program)
 tokenNotFound:
         tokenNum++;
     }
-
     return TRUE;
 
 endOfLineReached:
     return FALSE;
+}
+
+int ast(unsigned char *tokenTree)
+{
+    short statementPos = 0;
+    short conditionalPos;
+    short blockPos;
+    short i;
+    short j;
+    short k;
+
+    debug(uartTxBuf, 0, "AST\r\n");
+    debug(uartTxBuf, 0, tokenTree);
+    debug(uartTxBuf, 0, "\r\n");
+
+    // uart "test"
+    // pause
+    // repeat (10).
+    // HX0DBV0T
+    // BV0DHX0T
+
+    // pause
+    // uart "test"
+    // repeat (10).
+    // DHX0BV0T
+    // BV0DHX0T
+
+    // look for terminator (.)
+    // look for control flow (repeat)
+    // look for block (uart)
+
+    for(i=0;i<MAX_TOKEN_TREE_SIZE;i++)
+        tokenTreeAst[i] = 0;
+
+    /*
+    0123456789012
+    DTDTHX0BV0TRT
+
+    tokenTreeIndex = 0
+    statementLen   = 1
+
+    tokenTreeIndex = 2
+    statementLen   = 1
+
+    tokenTreeIndex = 4
+    statementLen   = 3
+
+    tokenTreeIndex = 7
+    statementLen   = 3
+
+    tokenTreeIndex = 11
+    statementLen   = 1
+    */
+
+    tokenTreeIndex = 0;
+
+    do
+    {
+        for(statementPos=tokenTreeIndex;statementPos<MAX_TOKEN_TREE_SIZE;statementPos++)
+        {
+            if(tokenTree[statementPos] == 'T')
+            {
+                break;
+            }
+        }
+
+        for(conditionalPos=tokenTreeIndex;conditionalPos<statementPos;conditionalPos++)
+        {
+            if(tokenTree[conditionalPos] == 'B') // repeat
+            {
+                for(i=0;i<3;i++)
+                {
+                    tokenTreeAst[i+tokenTreeIndex] = tokenTree[conditionalPos+i];
+                }
+            }
+        }
+
+        for(blockPos=tokenTreeIndex;blockPos<statementPos;blockPos++)
+        {
+            if(tokenTree[blockPos] == 'D') // pause
+            {
+                tokenTreeAst[k+i+tokenTreeIndex] = tokenTree[blockPos];
+                continue;
+            }
+
+            if(tokenTree[blockPos] == 'R') // finish
+            {
+                tokenTreeAst[k+i+tokenTreeIndex] = tokenTree[blockPos];
+                continue;
+            }
+
+            if(tokenTree[blockPos] == 'H') // uart
+            {
+                for(k=0;k<3;k++)
+                {
+                    tokenTreeAst[k+i+tokenTreeIndex] = tokenTree[blockPos+k];
+                }
+            }
+        }
+
+        tokenTreeAst[statementPos] = 'T';
+        tokenTreeIndex += statementPos;
+    }
+    while(tokenTree[tokenTreeIndex]);
+
+    debug(uartTxBuf, 0, tokenTreeAst);
+    debug(uartTxBuf, 0, "\r\n");
+
+    return TRUE;
 }

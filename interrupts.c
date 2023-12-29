@@ -28,6 +28,20 @@ extern short task_4_timeout;
 unsigned char uartRxBuf[UART_RX_BUF_SIZE];
 unsigned char uartTxBuf[UART_TX_BUF_ARRAY_SIZE][UART_TX_BUF_SIZE];
 
+// Ran into an issue (bug??) which seemed to overwrite rxReg when it was
+// defined within the USCIA0Interrupt(...) interrupt routine. Moving
+// into global space fixed. In some cases the character 'd' would be
+// printed to the UART. Breaking into the USCIA0Interrupt(...) found
+// that rxReg was changing to a 'd'. Disassembling the code, found that
+// the MOV.B used to assign it from 0x50C was the SP, which was pointing
+// to address 0x0000?? Odd issue - not sure if its a coding thing, a compiler
+// thing or something else?? Update: clearly a stack pointer getting out
+// of whack - found that the 'd' (0x64) was in the stack, somehow
+// the stack pointer is being changed when coming back into the UART ISR,
+// but can't be sure its part of the twine's task manager, or something
+// in how the TI430 is managing things in the ISR??
+volatile unsigned char rxReg;
+
 /*****************************************************************************/
 /* Reference to the vector pragmas can be found in slau132y.pdf v21.6.0.LTS   */
 /*****************************************************************************/
@@ -61,8 +75,6 @@ __interrupt void RTCIntervalInterrupt(void)
 /*****************************************************************************/
 __interrupt void USCIA0Interrupt(void)
 {
-
-    volatile unsigned char rxReg;
     static unsigned int i, j;
     static unsigned l; // used to count steps needed for backspace
     static unsigned s; // used to stop backspace at uartRxBuf[0]

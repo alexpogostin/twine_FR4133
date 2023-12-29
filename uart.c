@@ -32,7 +32,6 @@ void uartInit(void)
 /*****************************************************************************/
 short uartTx(unsigned char (*txStr)[UART_RX_BUF_SIZE], unsigned int node, unsigned char *str)
 {
-
     unsigned int i = 0;
     unsigned int j = 0;
 
