@@ -11,14 +11,18 @@
 #ifndef STRING_H
 #define STRING_H
 
-#define NULL      0x00
-#define CTRL_C    0x03
-#define BACKSPACE 0x08
-#define LF        0x0A
-#define CR        0x0D
-#define SPACE     0x20
-#define ASCII_0   0x30
-#define DEL       0x7F
+#define NULL                0x00
+#define CTRL_C              0x03
+#define BACKSPACE           0x08
+#define LF                  0x0A
+#define CR                  0x0D
+#define SPACE               0x20
+#define DOUBLE_QUOTE        0x22
+#define OPEN_PARENTHESIS    0x28
+#define CLOSE_PARENTHESIS   0x29
+
+#define ASCII_0             0x30
+#define DEL                 0x7F
 
 #define CRLF "\r\n"
 #define BANNER "twine"
