@@ -18,6 +18,12 @@
 #define TOKEN 1
 #define TOKEN_HEADER_LEN 2
 
+#define MAX_STRING_VARS 4
+#define MAX_INT_VARS 4
+
+#define MAX_STRING_LEN 32
+#define MAX_INT_LEN 8
+
 #define TOKEN_IS      "\x02" "\x41" "is"      // A
 #define TOKEN_REPEAT  "\x06" "\x42" "repeat"  // B
 #define TOKEN_SET     "\x03" "\x43" "set"     // C

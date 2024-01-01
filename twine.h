@@ -33,7 +33,7 @@
 #define TRUE 1
 #define FALSE 0
 
-#define DEBUG TRUE
+#define DEBUG FALSE
 #define debug(args ...) if (DEBUG) uartTx(args)
 
 #endif
