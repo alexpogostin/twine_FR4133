@@ -72,20 +72,19 @@ int lexer(unsigned char *program)
 
     for(tokenNum=0;tokenNum<MAX_NUM_TOKENS;) // search through list of tokens
     {
-        if(*(p) == 0x0D)
+        if(*(p) == CR) // 0x0D
             break;
 
-        while(*(p) == 0x20)
+        while(*(p) == SPACE) // 0x20
             p++;
 
-        if(*(p) == 0x28)
+        if(*(p) == OPEN_PARENTHESIS) // 0x28
         {
             p++;
-
             i = 0;
-            while(*(p) != 0x29)
+            while(*(p) != CLOSE_PARENTHESIS) // 0x29
             {
-                if(*(p) == 0x0D)
+                if(*(p) == CR)
                 {
                     goto endOfLineReached;
                 }
@@ -99,13 +98,13 @@ int lexer(unsigned char *program)
             continue;
         }
 
-        if(*(p) == 0x22)
+        if(*(p) == DOUBLE_QUOTE) // 0x22
         {
             p++;
             i = 0;
-            while(*(p) != 0x22)
+            while(*(p) != DOUBLE_QUOTE) // 0x22
             {
-                if(*(p) == 0x0D)
+                if(*(p) == CR)
                 {
                     goto endOfLineReached;
                 }
@@ -149,7 +148,6 @@ int ast(unsigned char *tokenTree)
     short conditionalPos;
     short blockPos;
     short i;
-    short j;
     short k;
 
     debug(uartTxBuf, 0, "AST\r\n");
@@ -168,7 +166,7 @@ int ast(unsigned char *tokenTree)
 
         for(statementEnd=tokenTreeIndex;statementEnd<MAX_TOKEN_TREE_SIZE;statementEnd++)
         {
-            if(tokenTree[statementEnd] == 'T')
+            if(tokenTree[statementEnd] == 'T') // token end
             {
                 break;
             }
@@ -203,7 +201,7 @@ int ast(unsigned char *tokenTree)
             {
                 for(k=0;k<3;k++)
                 {
-                    tokenTreeAst[tokenTreeIndex+i+k] = tokenTree[blockPos+k];
+                    tokenTreeAst[tokenTreeIndex+blockPos+i+k] = tokenTree[blockPos+k];
                 }
             }
         }

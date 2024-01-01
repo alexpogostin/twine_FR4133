@@ -117,7 +117,7 @@ int interpreter(int *tokenTreeIndex, unsigned char *tokenTree) // abstract synta
 
         case 'D': // 0x44 pause
         debug(uartTxBuf, 0, "D\r\n");
-        //taskSleep(1);
+        taskSleep(1);
         runState = _end(tokenTreeIndex, tokenTree);
         break;
 
