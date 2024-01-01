@@ -15,11 +15,11 @@
 /*****************************************************************************/
 extern unsigned char uartTxBuf[UART_TX_BUF_ARRAY_SIZE][UART_TX_BUF_SIZE];
 
-unsigned char strVars[4][32];
-unsigned char intVars[4][8];
+unsigned char strVars[MAX_STRING_VARS][MAX_STRING_LEN];
+unsigned char intVars[MAX_INT_VARS][MAX_INT_LEN];
 
 unsigned char tokenTree[MAX_TOKEN_TREE_SIZE];
-unsigned char tokenTreeAst[16];
+unsigned char tokenTreeAst[MAX_TOKEN_TREE_SIZE];
 int tokenTreeIndex;
 
 int strVarsIndex;
@@ -145,7 +145,7 @@ endOfLineReached:
 
 int ast(unsigned char *tokenTree)
 {
-    short statementPos = 0;
+    short statementEnd;
     short conditionalPos;
     short blockPos;
     short i;
@@ -156,79 +156,46 @@ int ast(unsigned char *tokenTree)
     debug(uartTxBuf, 0, tokenTree);
     debug(uartTxBuf, 0, "\r\n");
 
-    // uart "test"
-    // pause
-    // repeat (10).
-    // HX0DBV0T
-    // BV0DHX0T
-
-    // pause
-    // uart "test"
-    // repeat (10).
-    // DHX0BV0T
-    // BV0DHX0T
-
-    // look for terminator (.)
-    // look for control flow (repeat)
-    // look for block (uart)
-
     for(i=0;i<MAX_TOKEN_TREE_SIZE;i++)
         tokenTreeAst[i] = 0;
-
-    /*
-    0123456789012
-    DTDTHX0BV0TRT
-
-    tokenTreeIndex = 0
-    statementLen   = 1
-
-    tokenTreeIndex = 2
-    statementLen   = 1
-
-    tokenTreeIndex = 4
-    statementLen   = 3
-
-    tokenTreeIndex = 7
-    statementLen   = 3
-
-    tokenTreeIndex = 11
-    statementLen   = 1
-    */
 
     tokenTreeIndex = 0;
 
     do
     {
-        for(statementPos=tokenTreeIndex;statementPos<MAX_TOKEN_TREE_SIZE;statementPos++)
+        i = 0;
+        k = 0;
+
+        for(statementEnd=tokenTreeIndex;statementEnd<MAX_TOKEN_TREE_SIZE;statementEnd++)
         {
-            if(tokenTree[statementPos] == 'T')
+            if(tokenTree[statementEnd] == 'T')
             {
                 break;
             }
         }
 
-        for(conditionalPos=tokenTreeIndex;conditionalPos<statementPos;conditionalPos++)
+        for(conditionalPos=tokenTreeIndex;conditionalPos<statementEnd;conditionalPos++)
         {
             if(tokenTree[conditionalPos] == 'B') // repeat
             {
                 for(i=0;i<3;i++)
                 {
-                    tokenTreeAst[i+tokenTreeIndex] = tokenTree[conditionalPos+i];
+                    tokenTreeAst[tokenTreeIndex+i] = tokenTree[conditionalPos+i];
                 }
             }
         }
 
-        for(blockPos=tokenTreeIndex;blockPos<statementPos;blockPos++)
+        for(blockPos=tokenTreeIndex;blockPos<statementEnd;blockPos++)
         {
             if(tokenTree[blockPos] == 'D') // pause
             {
-                tokenTreeAst[k+i+tokenTreeIndex] = tokenTree[blockPos];
+                tokenTreeAst[tokenTreeIndex+i+k] = tokenTree[blockPos];
                 continue;
             }
 
             if(tokenTree[blockPos] == 'R') // finish
             {
-                tokenTreeAst[k+i+tokenTreeIndex] = tokenTree[blockPos];
+                tokenTreeAst[tokenTreeIndex+i+k] = tokenTree[blockPos];
                 continue;
             }
 
@@ -236,13 +203,13 @@ int ast(unsigned char *tokenTree)
             {
                 for(k=0;k<3;k++)
                 {
-                    tokenTreeAst[k+i+tokenTreeIndex] = tokenTree[blockPos+k];
+                    tokenTreeAst[tokenTreeIndex+i+k] = tokenTree[blockPos+k];
                 }
             }
         }
 
-        tokenTreeAst[statementPos] = 'T';
-        tokenTreeIndex += statementPos;
+        tokenTreeAst[statementEnd] = 'T';
+        tokenTreeIndex = statementEnd + 1;
     }
     while(tokenTree[tokenTreeIndex]);
 
