@@ -55,27 +55,29 @@ Examples have been expanded to include a simple interpreter called Is.
 
 Example:
 ```
-# e
- 1: pause
- 2: uart "Hello World."
- 3: uart "This is a test."
- 4: repeat (5).
- 5: finish.
- 6:
+# ed
+ 1: uart "LED on"
+ 2: led on
+ 3: pause
+ 4: uart "LED off"
+ 5: led off
+ 6: pause
+ 7: repeat (4).
+ 8: finish.
+ 9:
 # r
-Hello World.
-This is a test.
-Hello World.
-This is a test.
-Hello World.
-This is a test.
-Hello World.
-This is a test.
-Hello World.
-This is a test.
+LED on
+LED off
+LED on
+LED off
+LED on
+LED off
+LED on
+LED off
 program finished
-```
 
+#
+```
 # Console Commands
 
 ```
