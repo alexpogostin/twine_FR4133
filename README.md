@@ -51,20 +51,32 @@ short task_2(void)
 
 # Is - a simple interpreter
 
-Examples have been expanded to include a simple interpreter called Is. This example Is program will output "Hello", pause for 1 second and repeat. Use Ctrl-C to exit.
+Examples have been expanded to include a simple interpreter called Is.
 
 Example:
 ```
-# e
- 1: out
- 2: pause
- 3: rerun
- 4: .
+# ed
+ 1: uart "LED on"
+ 2: led on
+ 3: pause
+ 4: uart "LED off"
+ 5: led off
+ 6: pause
+ 7: repeat (4).
+ 8: finish.
+ 9:
 # r
-Hello
-Hello
-Hello
-program terminated
+LED on
+LED off
+LED on
+LED off
+LED on
+LED off
+LED on
+LED off
+program finished
+
+#
 ```
 
 # Console Commands
@@ -77,5 +89,5 @@ e: edit program
 r: run program
 l: list program
 --------------------
-.: exit program edit
+Esc CR: exit program edit
 ```
