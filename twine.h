@@ -6,7 +6,7 @@
  *
  * Twine is a strong thread or string consisting of two or more strands.
  *
- * Copyright (C) 2022 Alex Pogostin <alex.pogostin@outlook.com>
+ * Copyright (C) 2024 Alex Pogostin <alex.pogostin@outlook.com>
  *
  */
 
