@@ -43,8 +43,7 @@ static unsigned char *token[MAX_NUM_TOKENS] = {TOKEN_IS,
                                                TOKEN_OFF,
                                                TOKEN_YES,
                                                TOKEN_NO,
-                                               TOKEN_LED1,
-                                               TOKEN_LED2,
+                                               TOKEN_LED,
                                                TOKEN_BUT1,
                                                TOKEN_BUT2,
                                                TOKEN_PRESSED,
@@ -188,12 +187,42 @@ int ast(unsigned char *tokenTree)
             if(tokenTree[blockPos] == 'D') // pause
             {
                 tokenTreeAst[tokenTreeIndex+i+k] = tokenTree[blockPos];
+                i++;
                 continue;
             }
 
             if(tokenTree[blockPos] == 'R') // finish
             {
                 tokenTreeAst[tokenTreeIndex+i+k] = tokenTree[blockPos];
+                i++;
+                continue;
+            }
+
+            if(tokenTree[blockPos] == 'M') // led
+            {
+                tokenTreeAst[tokenTreeIndex+i+k] = tokenTree[blockPos];
+                i++;
+                continue;
+            }
+
+            if(tokenTree[blockPos] == 'I') // on
+            {
+                tokenTreeAst[tokenTreeIndex+i+k] = tokenTree[blockPos];
+                i++;
+                continue;
+            }
+
+            if(tokenTree[blockPos] == 'J') // off
+            {
+                tokenTreeAst[tokenTreeIndex+i+k] = tokenTree[blockPos];
+                i++;
+                continue;
+            }
+
+            if(tokenTree[blockPos] == 'S') // rerun
+            {
+                tokenTreeAst[tokenTreeIndex+i+k] = tokenTree[blockPos];
+                i++;
                 continue;
             }
 
@@ -201,8 +230,10 @@ int ast(unsigned char *tokenTree)
             {
                 for(k=0;k<3;k++)
                 {
-                    tokenTreeAst[tokenTreeIndex+blockPos+i+k] = tokenTree[blockPos+k];
+                    tokenTreeAst[tokenTreeIndex+i+k] = tokenTree[blockPos+k];
                 }
+                k = 0;
+                i += 3;
             }
         }
 

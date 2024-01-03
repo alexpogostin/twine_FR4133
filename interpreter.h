@@ -19,5 +19,8 @@ int _value(int *val, int *tokenTreeIndex, unsigned char *tokenTree);
 int _finish(int *tokenTreeIndex);
 int _rerun(int *tokenTreeIndex);
 int _end(int *tokenTreeIndex, unsigned char *tokenTree);
+int _led(int *tokenTreeIndex, unsigned char *tokenTree);
+int _on(int *tokenTreeIndex, unsigned char *tokenTree);
+int _off(int *tokenTreeIndex, unsigned char *tokenTree);
 
 #endif

@@ -85,8 +85,7 @@ static unsigned char key_words[] = CRLF
                                   "off" CRLF
                                   "yes:" CRLF
                                   "no:" CRLF
-                                  "led1" CRLF
-                                  "led2" CRLF
+                                  "led" CRLF
                                   "but1" CRLF
                                   "but2" CRLF
                                   "pressed" CRLF

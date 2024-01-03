@@ -24,6 +24,10 @@
 #define MAX_STRING_LEN 32
 #define MAX_INT_LEN 8
 
+// Can't use LED1 GPIO 1.0, its assigned TXD for console uart.
+// Renaming LED1 to LED and assigning it GPIO 4.0, user LED2.
+// Token 'N' (0x4E) is available for use as a token.
+
 #define TOKEN_IS      "\x02" "\x41" "is"      // A
 #define TOKEN_REPEAT  "\x06" "\x42" "repeat"  // B
 #define TOKEN_SET     "\x03" "\x43" "set"     // C
@@ -36,8 +40,7 @@
 #define TOKEN_OFF     "\x03" "\x4A" "off"     // J
 #define TOKEN_YES     "\x04" "\x4B" "yes:"    // K
 #define TOKEN_NO      "\x03" "\x4C" "no:"     // L
-#define TOKEN_LED1    "\x04" "\x4D" "led1"    // M
-#define TOKEN_LED2    "\x04" "\x4E" "led2"    // N
+#define TOKEN_LED     "\x03" "\x4D" "led"     // M
 #define TOKEN_BUT1    "\x04" "\x4F" "but1"    // O
 #define TOKEN_BUT2    "\x04" "\x50" "but2"    // P
 #define TOKEN_PRESSED "\x07" "\x51" "pressed" // Q

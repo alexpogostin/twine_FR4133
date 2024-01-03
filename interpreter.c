@@ -126,6 +126,21 @@ int interpreter(int *tokenTreeIndex, unsigned char *tokenTree) // abstract synta
         _finish(tokenTreeIndex);
         break;
 
+        case 'M': // 0x4D led
+        debug(uartTxBuf, 0, "M\r\n");
+        runState = _led(tokenTreeIndex, tokenTree);
+        break;
+
+        case 'I': // 0x49 on
+        debug(uartTxBuf, 0, "I\r\n");
+        runState = _on(tokenTreeIndex, tokenTree);
+        break;
+
+        case 'J': // 0x4A off
+        debug(uartTxBuf, 0, "J\r\n");
+        runState = _off(tokenTreeIndex, tokenTree);
+        break;
+
         case 0x01: // ctrl-c
         uartTx(uartTxBuf, 0, "program terminated\r\n");
         _finish(tokenTreeIndex);
@@ -144,16 +159,6 @@ int interpreter(int *tokenTreeIndex, unsigned char *tokenTree) // abstract synta
 
         case 'L': // no:
         debug(uartTxBuf, 0, "L\r\n");
-        runState = tokenTree[tokenTreeIndex++];
-        break;
-
-        case 'M': // led1
-        debug(uartTxBuf, 0, "M\r\n");
-        runState = tokenTree[tokenTreeIndex++];
-        break;
-
-        case 'N': // led2
-        debug(uartTxBuf, 0, "N\r\n");
         runState = tokenTree[tokenTreeIndex++];
         break;
 
@@ -224,6 +229,65 @@ int _string(int *tokenTreeIndex, unsigned char *tokenTree)
     return i; // runState
 }
 
+/*****************************************************************************/
+int _led(int *tokenTreeIndex, unsigned char *tokenTree)
+{
+    int runState;
+    unsigned char token;
+
+    token = tokenTree[++(*tokenTreeIndex)];
+
+    if(token == 'I' || token == 'J') // is next token on or off
+    {
+        runState = tokenTree[(*tokenTreeIndex)]; // set runState to on or off
+    }
+    else
+    {
+        runState = 0xFF;
+    }
+
+    return runState;
+}
+
+/*****************************************************************************/
+int _on(int *tokenTreeIndex, unsigned char *tokenTree)
+{
+    int i;
+
+    if(tokenTree[(*tokenTreeIndex - 1)] == 'M') // is previous token led
+    {
+        debug(uartTxBuf, 0, "led on\r\n");
+        P4OUT |= BIT0; // turn on user LED2
+        i = tokenTree[++(*tokenTreeIndex)];
+    }
+    else
+    {
+        ++(*tokenTreeIndex);
+        i = 0xFF;
+    }
+
+    return i; // runState
+}
+
+/*****************************************************************************/
+int _off(int *tokenTreeIndex, unsigned char *tokenTree)
+{
+    int i;
+
+    if(tokenTree[(*tokenTreeIndex - 1)] == 'M') // is previous token led
+    {
+        debug(uartTxBuf, 0, "led off\r\n");
+        P4OUT &= ~BIT0; // turn off user LED2
+        i = tokenTree[++(*tokenTreeIndex)];
+    }
+    else
+    {
+        ++(*tokenTreeIndex);
+        i = 0xFF;
+    }
+
+    return i; // runState
+}
 
 /*****************************************************************************/
 int _repeat(int *tokenTreeIndex, unsigned char *tokenTree)
