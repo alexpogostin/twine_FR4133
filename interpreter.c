@@ -76,7 +76,12 @@ int interpreter(int *tokenTreeIndex, unsigned char *tokenTree) // abstract synta
     {
         case 'H': // 0x48 uart
         debug(uartTxBuf, 0, "H\r\n");
-        runState = _uart(tokenTreeIndex, tokenTree);
+        runState = _uart_lcd(tokenTreeIndex, tokenTree);
+        break;
+
+        case 'U': // 0x55 lcd
+        debug(uartTxBuf, 0, "U\r\n");
+        runState = _uart_lcd(tokenTreeIndex, tokenTree);
         break;
 
         case 'X': // 0x58 string
@@ -190,9 +195,7 @@ int interpreter(int *tokenTreeIndex, unsigned char *tokenTree) // abstract synta
 }
 
 /*****************************************************************************/
-//
-/*****************************************************************************/
-int _uart(int *tokenTreeIndex, unsigned char *tokenTree)
+int _uart_lcd(int *tokenTreeIndex, unsigned char *tokenTree)
 {
     int runState;
 
@@ -212,12 +215,33 @@ int _uart(int *tokenTreeIndex, unsigned char *tokenTree)
 int _string(int *tokenTreeIndex, unsigned char *tokenTree)
 {
     int i;
+    int j;
+    int k;
 
-    if(tokenTree[(*tokenTreeIndex - 1)] == 'H') // is previous token uart
+    if(tokenTree[(*tokenTreeIndex - 1)] == 'H')// is previous token uart
     {
         i = tokenTree[++(*tokenTreeIndex)];
         uartTx(uartTxBuf, 0, &strVars[i & 0x0F][0]);
         uartTx(uartTxBuf, 0, CRLF);
+        i = tokenTree[++(*tokenTreeIndex)];
+    }
+    else if (tokenTree[(*tokenTreeIndex - 1)] == 'U') // is previous token lcd
+    {
+        i = tokenTree[++(*tokenTreeIndex)];
+
+        writeLcd(0,0); // clear all 5 digits
+
+        for(k=0;k<32;k++) // look for end of strVar[][]
+        {
+            if(strVars[i & 0x0F][k] == 0)
+                break;
+        }
+
+        for(j=0;j<k;j++)
+        {
+            writeLcd(strVars[i & 0x0F][j], j + 1);
+        }
+
         i = tokenTree[++(*tokenTreeIndex)];
     }
     else
