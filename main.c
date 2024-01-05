@@ -30,6 +30,9 @@ int main(void)
     startXt1Clk();
     startRtcClk();
     uartInit();
+    initLcd();
+
+    writeLcd(0,0); // clear LCD
 
     // If this is a power up then wait for USB enumeration.
     // Allows use with "backchannel" UART-over-USB at power-up.

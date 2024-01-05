@@ -235,6 +235,16 @@ int ast(unsigned char *tokenTree)
                 k = 0;
                 i += 3;
             }
+
+            if(tokenTree[blockPos] == 'U') // lcd
+            {
+                for(k=0;k<3;k++)
+                {
+                    tokenTreeAst[tokenTreeIndex+i+k] = tokenTree[blockPos+k];
+                }
+                k = 0;
+                i += 3;
+            }
         }
 
         tokenTreeAst[statementEnd] = 'T';

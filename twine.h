@@ -23,9 +23,12 @@
 #include "string.h"
 #include "lexer.h"
 #include "interpreter.h"
+#include "lcd.h"
 
 #define read_reg_8(x) (*((volatile unsigned char *)((unsigned short)x)))
 #define read_reg_16(x) (*((volatile unsigned short *)((unsigned short)x)))
+
+#define write_reg_16(x) (*((volatile unsigned short *)((unsigned short)x)))
 
 #define MAX_PROG_LINES 32
 #define MAX_PROG_LINE_LEN 32
