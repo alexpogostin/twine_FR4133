@@ -588,7 +588,6 @@ short task_1(void) // command mode
                     taskControl(TASK3, ENABLE);
                     goto exit;
                 }
-
             }
 
             uartTx(uartTxBuf, 0, prompt);
