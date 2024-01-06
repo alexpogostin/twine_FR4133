@@ -17,17 +17,33 @@
 
 #include "twine.h"
 
-static unsigned char *ascii_table[MAX_NUM_TOKENS] = {ASCII_0x30,
-                                                     ASCII_0x31,
-                                                     ASCII_0x32,
-                                                     ASCII_0x33,
-                                                     ASCII_0x34,
-                                                     ASCII_0x35,
-                                                     ASCII_0x36,
-                                                     ASCII_0x37,
-                                                     ASCII_0x38,
-                                                     ASCII_0x39,
-                                                    };
+static unsigned char *ascii_table[26] = {ASCII_0x20,
+                                         ASCII_0x21,
+                                         ASCII_0x22,
+                                         ASCII_0x23,
+                                         ASCII_0x24,
+                                         ASCII_0x25,
+                                         ASCII_0x26,
+                                         ASCII_0x27,
+                                         ASCII_0x28,
+                                         ASCII_0x29,
+                                         ASCII_0x2A,
+                                         ASCII_0x2B,
+                                         ASCII_0x2C,
+                                         ASCII_0x2D,
+                                         ASCII_0x2E,
+                                         ASCII_0x2F,
+                                         ASCII_0x30,
+                                         ASCII_0x31,
+                                         ASCII_0x32,
+                                         ASCII_0x33,
+                                         ASCII_0x34,
+                                         ASCII_0x35,
+                                         ASCII_0x36,
+                                         ASCII_0x37,
+                                         ASCII_0x38,
+                                         ASCII_0x39,
+                                        };
 
 void initLcd(void)
 {
@@ -41,24 +57,10 @@ void initLcd(void)
     SYSCFG2 |= LCDPCTL; // turn on LCD power pin
 }
 
-short writeLcd(unsigned char ascii, unsigned char location)
+void clearLcd(void)
 {
-
-    if(location)
-    {
-        ascii -= 48; // temporary until we fill in the entire ascii_table[].
-        LCDM1 = *(ascii_table[ascii] + 0);
-        LCDM0 = *(ascii_table[ascii] + 1);
-    }
-    else
-    {
         LCDM1 = 0;
         LCDM0 = 0;;
-    }
-
-    switch (location)
-    {
-        case 0:
         LCDM5 = 0;
         LCDM4 = 0;
         LCDM7 = 0;
@@ -69,8 +71,18 @@ short writeLcd(unsigned char ascii, unsigned char location)
         LCDM10 = 0;
         LCDM3 = 0;
         LCDM2 = 0;
-        break;
+}
 
+short writeLcd(unsigned char ascii, unsigned char location)
+{
+
+    ascii -= 32; // offsets first 32 ASCII characters
+
+    LCDM1 = *(ascii_table[ascii] + 0);
+    LCDM0 = *(ascii_table[ascii] + 1);
+
+    switch (location)
+    {
         case 1:
         LCDM5 = *(ascii_table[ascii] + 2);
         LCDM4 = *(ascii_table[ascii] + 3);

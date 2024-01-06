@@ -95,6 +95,22 @@
 // may be some patter - or understanding
 // as to why this is occuring.
 
+#define ASCII_0x20 "\x00" "\x00" "\x00" "\x00" // space
+#define ASCII_0x21 "\x00" "\x00" "\x00" "\x00" // !
+#define ASCII_0x22 "\x00" "\x00" "\x00" "\x00" // ""
+#define ASCII_0x23 "\x00" "\x00" "\x00" "\x00" // #
+#define ASCII_0x24 "\x00" "\x00" "\x00" "\x00" // $
+#define ASCII_0x25 "\x00" "\x00" "\x00" "\x00" // %
+#define ASCII_0x26 "\x00" "\x00" "\x00" "\x00" // &
+#define ASCII_0x27 "\x00" "\x00" "\x00" "\x00" // '
+#define ASCII_0x28 "\x00" "\x00" "\x00" "\x00" // (
+#define ASCII_0x29 "\x00" "\x00" "\x00" "\x00" // )
+#define ASCII_0x2A "\x00" "\x00" "\x00" "\x00" // *
+#define ASCII_0x2B "\x00" "\x00" "\x00" "\x00" // +
+#define ASCII_0x2C "\x00" "\x00" "\x00" "\x00" // `
+#define ASCII_0x2D "\x00" "\x00" "\x00" "\x00" // -
+#define ASCII_0x2E "\x00" "\x00" "\x00" "\x00" // .
+#define ASCII_0x2F "\x00" "\x00" "\x00" "\x00" // /
 #define ASCII_0x30 "\x84" "\x21" "\x28" "\xFC" // 0
 #define ASCII_0x31 "\x84" "\x21" "\x20" "\x60" // 1
 #define ASCII_0x32 "\x84" "\x21" "\x00" "\xDB" // 2
@@ -107,6 +123,7 @@
 #define ASCII_0x39 "\x84" "\x21" "\x00" "\xF7" // 9
 
 void initLcd(void);
+void clearLcd(void);
 short writeLcd(unsigned char ascii, unsigned char location);
 
 #endif

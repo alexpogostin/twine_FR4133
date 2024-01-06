@@ -229,7 +229,7 @@ int _string(int *tokenTreeIndex, unsigned char *tokenTree)
     {
         i = tokenTree[++(*tokenTreeIndex)];
 
-        writeLcd(0,0); // clear all 5 digits
+        clearLcd();
 
         for(k=0;k<32;k++) // look for end of strVar[][]
         {
