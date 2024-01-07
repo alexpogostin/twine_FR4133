@@ -14,6 +14,7 @@ ORDERED_OBJS += \
 "./gpios.obj" \
 "./interpreter.obj" \
 "./interrupts.obj" \
+"./lcd.obj" \
 "./lexer.obj" \
 "./main.obj" \
 "./power.obj" \
@@ -142,8 +143,7 @@ BIN_OUTPUTS__QUOTED += \
 
 
 # All Target
-all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
-	@$(MAKE) --no-print-directory -Onone "twine_FR4133.out"
+all: twine_FR4133.out
 
 # Tool invocations
 twine_FR4133.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
@@ -163,8 +163,8 @@ twine_FR4133.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "clocks.obj" "gpios.obj" "interpreter.obj" "interrupts.obj" "lexer.obj" "main.obj" "power.obj" "string.obj" "tasks.obj" "uart.obj" 
-	-$(RM) "clocks.d" "gpios.d" "interpreter.d" "interrupts.d" "lexer.d" "main.d" "power.d" "string.d" "tasks.d" "uart.d" 
+	-$(RM) "clocks.obj" "gpios.obj" "interpreter.obj" "interrupts.obj" "lcd.obj" "lexer.obj" "main.obj" "power.obj" "string.obj" "tasks.obj" "uart.obj" 
+	-$(RM) "clocks.d" "gpios.d" "interpreter.d" "interrupts.d" "lcd.d" "lexer.d" "main.d" "power.d" "string.d" "tasks.d" "uart.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 
