@@ -10,8 +10,10 @@
 
 #include "twine.h"
 
-static int intVarNum; // integer variable number
-static int strVarNum; // string variable number
+static int intVarNum;   // integer variable number (in ASCII 0x30-0x39)
+static int strVarNum;   // string variable number (in ASCII 0x30-0x39)
+static int intVarIndex; // index into strVars[][] array
+static int strVarIndex; // index into intVars[][] array
 
 /*
  * The varman code is intended to remove globals and instead
@@ -21,34 +23,28 @@ static int strVarNum; // string variable number
  * it may neccassary to "atomize" (make atomic) some of these
  * values using mutexes, escpecially those found in the UART
  * interrupt routine (RX and TX buffs).
-*/
+ */
 
-int *getIntVarNum(void)
-{
-    return &intVarNum;
-}
+/* 
+ * A note regarding coding style used here. Its important to
+ * remain consistant thoughout you code, but in this case,
+ * the use of a single line to set, get or increment a value
+ * makes it less error prone.
+ */
 
-void setIntVarNum(int value)
-{
-    intVarNum = value;
-}
+int *getIntVarNum(void)      {return &intVarNum;}
+void setIntVarNum(int value) {intVarNum = value;}
+void incIntVarNum(void)      {intVarNum++;}
 
-void incIntVarNum(void)
-{
-    intVarNum++;
-}
+int *getStrVarNum(void)      {return &strVarNum;}
+void setStrVarNum(int value) {strVarNum = value;}
+void incStrVarNum(void)      {strVarNum++;}
 
-int *getStrVarNum(void)
-{
-    return &strVarNum;
-}
+int *getIntVarIndex(void)      {return &intVarIndex;}
+void setIntVarIndex(int value) {intVarIndex = value;}
+void incIntVarIndex(void)      {intVarIndex++;}
 
-void setStrVarNum(int value)
-{
-    strVarNum = value;
-}
+int *getStrVarIndex(void)      {return &strVarIndex;}
+void setStrVarIndex(int value) {strVarIndex = value;}
+void incStrVarIndex(void)      {strVarIndex++;}
 
-void incStrVarNum(void)
-{
-    strVarNum++;
-}

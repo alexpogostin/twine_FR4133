@@ -19,10 +19,7 @@ extern unsigned char tokenTree[MAX_TOKEN_TREE_SIZE];
 extern unsigned char tokenTreeAst[MAX_TOKEN_TREE_SIZE];
 extern int tokenTreeIndex;
 extern unsigned char strVars[4][32];
-extern int strVarsIndex;
-
 extern unsigned char intVars[4][8];
-extern int intVarsIndex;
 
 /*****************************************************************************/
 /* global declarations                                                       */
@@ -610,10 +607,10 @@ short task_2(void) // edit mode task
 
     task_2_stack_size = ((taskManager_stack_2 - (unsigned short) __get_SP_register())>>1) + 1;
 
-    strVarsIndex = 0;
+    setStrVarIndex(0x00);
     setStrVarNum(0x30);
 
-    intVarsIndex = 0;
+    setIntVarIndex(0x00);
     setIntVarNum(0x30);
 
     while(uartRxBuf[j])
@@ -678,10 +675,10 @@ short task_3(void) // interpreter task
 
     task_3_stack_size = ((taskManager_stack_3 - (unsigned short) __get_SP_register())>>1) + 1;
 
-    strVarsIndex = 0;
+    setStrVarIndex(0x00);
     setStrVarNum(0x30);
 
-    intVarsIndex = 0;
+    setIntVarIndex(0x00);
     setIntVarNum(0x30);
 
     tokenTreeIndex = 0;
