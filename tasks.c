@@ -380,6 +380,7 @@ void taskSleep(int count)
 }
 
 /*****************************************************************************/
+#ifdef REMOVE_FUNCTION_NEVER_REFERENCED_WARNING
 static void taskSuspend(int task)
 {
     short i;
@@ -447,8 +448,10 @@ static void taskSuspend(int task)
          }
 
 }
+#endif
 
 /*****************************************************************************/
+#ifdef REMOVE_FUNCTION_NEVER_REFERENCED_WARNING
 static void taskContinue(int task)
 {
     __disable_interrupt();
@@ -474,6 +477,7 @@ static void taskContinue(int task)
     __enable_interrupt();
 
 }
+#endif
 
 /*****************************************************************************/
 void taskControl(int task, short control)
