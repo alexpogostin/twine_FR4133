@@ -13,7 +13,7 @@
 /*****************************************************************************/
 /* global declarations                                                       */
 /*****************************************************************************/
-#define RXBUF_REGISTER 0x0C
+#define OFS_UCA0RXBUF 0x0C
 /*****************************************************************************/
 /* externs - these global variables are declared in tasks.c                  */
 /*****************************************************************************/
@@ -90,7 +90,7 @@ __interrupt void USCIA0Interrupt(void)
         break;
 
         case 0x02: // RX interrupt
-            rxReg = read_reg_8(EUSCI_A0_BASE + RXBUF_REGISTER);
+            rxReg = read_reg_8(EUSCI_A0_BASE + OFS_UCA0RXBUF);
             if(i < UART_RX_BUF_SIZE - 1)
             {
                 if(rxReg == BACKSPACE)
