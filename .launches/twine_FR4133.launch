@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="com.ti.ccstudio.debug.launchType.device.debugging">
     <mapAttribute key="ccs.memoryview.format">
+        <mapEntry key="org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser.PIN_CLONE_VIEW_1@#$TI MSP430 USB1/MSP430@#$0" value="16-Bit Hex - TI Style"/>
         <mapEntry key="org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser@#$TI MSP430 USB1/MSP430@#$0" value="8-Bit Hex - C Style"/>
     </mapAttribute>
     <mapAttribute key="ccs.memoryview.pageexpr">
-        <mapEntry key="org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser@#$TI MSP430 USB1/MSP430" value="@@strVars"/>
+        <mapEntry key="org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser.PIN_CLONE_VIEW_1@#$TI MSP430 USB1/MSP430" value="@@rxReg"/>
+        <mapEntry key="org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser@#$TI MSP430 USB1/MSP430" value="@@pStrNum"/>
     </mapAttribute>
     <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_DEBUGGER_PROPERTIES.MSP430FR4133.ccxml.TI MSP430 USB1/MSP430" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot; ?&gt;&#10;&lt;PropertyValues&gt;&#10;&#10;  &lt;property id=&quot;CIOTimestamp&quot;&gt;&#10;    &lt;curValue&gt;0&lt;/curValue&gt;&#10;  &lt;/property&gt;&#10;&#10;  &lt;property id=&quot;ConnectOnStartup&quot;&gt;&#10;    &lt;curValue&gt;1&lt;/curValue&gt;&#10;  &lt;/property&gt;&#10;&#10;  &lt;property id=&quot;EnableInstalledBreakpoint&quot;&gt;&#10;    &lt;curValue&gt;1&lt;/curValue&gt;&#10;  &lt;/property&gt;&#10;&#10;  &lt;property id=&quot;DisableIntWhileAsmStepping&quot;&gt;&#10;    &lt;curValue&gt;0&lt;/curValue&gt;&#10;  &lt;/property&gt;&#10;&#10;  &lt;property id=&quot;DisableIntWhileSrcStepping&quot;&gt;&#10;    &lt;curValue&gt;1&lt;/curValue&gt;&#10;  &lt;/property&gt;&#10;&#10;&lt;/PropertyValues&gt;&#10;"/>
     <setAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_HIDE_CONFIG_ELEMENT_TYPES">

@@ -1,1 +1,1 @@
-"./clocks.obj" "./gpios.obj" "./interpreter.obj" "./interrupts.obj" "./lcd.obj" "./lexer.obj" "./main.obj" "./power.obj" "./string.obj" "./tasks.obj" "./uart.obj" "../lnk_msp430fr4133.cmd" -llibc.a 
+"./clocks.obj" "./gpios.obj" "./interpreter.obj" "./interrupts.obj" "./lcd.obj" "./lexer.obj" "./main.obj" "./power.obj" "./string.obj" "./tasks.obj" "./uart.obj" "./varman.obj" "../lnk_msp430fr4133.cmd" -llibc.a 

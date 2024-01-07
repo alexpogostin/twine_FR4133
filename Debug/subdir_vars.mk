@@ -19,7 +19,8 @@ C_SRCS += \
 ../power.c \
 ../string.c \
 ../tasks.c \
-../uart.c 
+../uart.c \
+../varman.c 
 
 C_DEPS += \
 ./clocks.d \
@@ -32,7 +33,8 @@ C_DEPS += \
 ./power.d \
 ./string.d \
 ./tasks.d \
-./uart.d 
+./uart.d \
+./varman.d 
 
 OBJS += \
 ./clocks.obj \
@@ -45,7 +47,8 @@ OBJS += \
 ./power.obj \
 ./string.obj \
 ./tasks.obj \
-./uart.obj 
+./uart.obj \
+./varman.obj 
 
 OBJS__QUOTED += \
 "clocks.obj" \
@@ -58,7 +61,8 @@ OBJS__QUOTED += \
 "power.obj" \
 "string.obj" \
 "tasks.obj" \
-"uart.obj" 
+"uart.obj" \
+"varman.obj" 
 
 C_DEPS__QUOTED += \
 "clocks.d" \
@@ -71,7 +75,8 @@ C_DEPS__QUOTED += \
 "power.d" \
 "string.d" \
 "tasks.d" \
-"uart.d" 
+"uart.d" \
+"varman.d" 
 
 C_SRCS__QUOTED += \
 "../clocks.c" \
@@ -84,6 +89,7 @@ C_SRCS__QUOTED += \
 "../power.c" \
 "../string.c" \
 "../tasks.c" \
-"../uart.c" 
+"../uart.c" \
+"../varman.c" 
 
 
