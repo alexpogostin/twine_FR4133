@@ -27,7 +27,7 @@ static int strVarIndex; // index into intVars[][] array
 
 /* 
  * A note regarding coding style used here. Its important to
- * remain consistant thoughout you code, but in this case,
+ * remain consistant thoughout your code, but in this case,
  * the use of a single line to set, get or increment a value
  * makes it less error prone.
  */
