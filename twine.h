@@ -40,4 +40,9 @@
 #define DEBUG FALSE
 #define debug(args ...) if (DEBUG) uartTx(args)
 
+// there is a warning, #179-D casued by both taskContinue(...) and taskSuspend(...)
+// not being referenced. Need to keep these in the code for now. So using this
+// macro to remove this warning.
+#undef REMOVE_FUNCTION_NEVER_REFERENCED_WARNING
+
 #endif

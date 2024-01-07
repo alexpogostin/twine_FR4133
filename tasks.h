@@ -22,8 +22,11 @@ void taskSleep(int);
 void taskControl(int task, short control);
 
 static void taskTimeoutLock(short task, short count);
+
+#ifdef REMOVE_FUNCTION_NEVER_REFERENCED_WARNING
 static void taskSuspend(int task);
 static void taskContinue(int task);
+#endif
 
 static short task_1(void);
 static short task_2(void);
