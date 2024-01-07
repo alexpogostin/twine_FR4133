@@ -80,13 +80,13 @@ __interrupt void USCIA0Interrupt(void)
     static unsigned int s; // used to stop backspace at uartRxBuf[0]
     unsigned int k;
 
-    switch(__even_in_range(UCA0IV, 18))
+    switch(__even_in_range(UCA0IV, 18)) // Interrupt Vector Register
     {
         case 0x00: // No interrupts
         break;
 
         case 0x02: // RX interrupt
-            rxReg = read_reg_8(EUSCI_A0_BASE + 0xC);
+            rxReg = read_reg_8(EUSCI_A0_BASE + UCA0RXBUF);
             if(i < UART_RX_BUF_SIZE - 1)
             {
                 if(rxReg == BACKSPACE)
@@ -103,7 +103,7 @@ __interrupt void USCIA0Interrupt(void)
                     uartRxBuf[i++] = rxReg;
                     i = 0;
                 }
-                else if(rxReg == 0x03)
+                else if(rxReg == CTRL_C)
                 {
                     uartRxBuf[0] = CTRL_C;
                     i = 0;
@@ -124,8 +124,7 @@ __interrupt void USCIA0Interrupt(void)
         break;
 
         case 0x04: // TX interrupt
-
-            if(rxReg == BACKSPACE && l < 3 && (i > 0 || i == 0) && s ==0)
+            if(rxReg == BACKSPACE && l < 3 && (i > 0 || i == 0) && s == 0)
             {
                 if(l == 0)
                 {
