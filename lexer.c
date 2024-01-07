@@ -28,6 +28,8 @@ int strNum;
 int intVarsIndex;
 int intNum;
 
+#pragma PERSISTENT(token)
+
 /*****************************************************************************/
 /* static (local) declarations                                               */
 /*****************************************************************************/
@@ -51,7 +53,7 @@ static unsigned char *token[MAX_NUM_TOKENS] = {TOKEN_IS,
                                                TOKEN_RERUN,
                                                TOKEN_END,
                                                TOKEN_LCD,
-                                               TOKEN_FINAL,
+                                               TOKEN_FINAL
                                                };
 
 /*****************************************************************************/

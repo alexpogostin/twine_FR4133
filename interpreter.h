@@ -12,7 +12,7 @@
 #define INTERPRETER_H
 
 int interpreter(int *tokenTreeIndex, unsigned char *token_tree);
-int _uart(int *tokenTreeIndex, unsigned char *tokenTree);
+int _uart_lcd(int *tokenTreeIndex, unsigned char *tokenTree);
 int _string(int *tokenTreeIndex, unsigned char *tokenTree);
 int _repeat(int *tokenTreeIndex, unsigned char *tokenTree);
 int _value(int *val, int *tokenTreeIndex, unsigned char *tokenTree);

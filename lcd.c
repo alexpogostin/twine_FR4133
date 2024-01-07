@@ -17,6 +17,8 @@
 
 #include "twine.h"
 
+#pragma PERSISTENT(ascii_table)
+
 static unsigned char *ascii_table[26] = {ASCII_0x20,
                                          ASCII_0x21,
                                          ASCII_0x22,
@@ -60,7 +62,7 @@ void initLcd(void)
 void clearLcd(void)
 {
         LCDM1 = 0;
-        LCDM0 = 0;;
+        LCDM0 = 0;
         LCDM5 = 0;
         LCDM4 = 0;
         LCDM7 = 0;
