@@ -76,8 +76,8 @@ __interrupt void RTCIntervalInterrupt(void)
 __interrupt void USCIA0Interrupt(void)
 {
     static unsigned int i, j;
-    static unsigned l; // used to count steps needed for backspace
-    static unsigned s; // used to stop backspace at uartRxBuf[0]
+    static unsigned int l; // used to count steps needed for backspace
+    static unsigned int s; // used to stop backspace at uartRxBuf[0]
     unsigned int k;
 
     switch(__even_in_range(UCA0IV, 18))
@@ -125,7 +125,7 @@ __interrupt void USCIA0Interrupt(void)
 
         case 0x04: // TX interrupt
 
-            if(rxReg == BACKSPACE && l < 3 && i >= 0 && s == 0)
+            if(rxReg == BACKSPACE && l < 3 && (i > 0 || i == 0) && s ==0)
             {
                 if(l == 0)
                 {
