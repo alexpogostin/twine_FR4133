@@ -11,6 +11,10 @@
 #include "twine.h"
 
 /*****************************************************************************/
+/* global declarations                                                       */
+/*****************************************************************************/
+#define RXBUF_REGISTER 0x0C
+/*****************************************************************************/
 /* externs - these global variables are declared in tasks.c                  */
 /*****************************************************************************/
 extern unsigned short task_1_status;
@@ -86,7 +90,7 @@ __interrupt void USCIA0Interrupt(void)
         break;
 
         case 0x02: // RX interrupt
-            rxReg = read_reg_8(EUSCI_A0_BASE + UCA0RXBUF);
+            rxReg = read_reg_8(EUSCI_A0_BASE + RXBUF_REGISTER);
             if(i < UART_RX_BUF_SIZE - 1)
             {
                 if(rxReg == BACKSPACE)
