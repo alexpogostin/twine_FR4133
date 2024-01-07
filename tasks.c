@@ -16,7 +16,7 @@
 extern unsigned char uartRxBuf[UART_RX_BUF_SIZE];
 extern unsigned char uartTxBuf[UART_TX_BUF_ARRAY_SIZE][UART_TX_BUF_SIZE];
 extern unsigned char tokenTree[MAX_TOKEN_TREE_SIZE];
-extern unsigned char tokenTreeAst[16];
+extern unsigned char tokenTreeAst[MAX_TOKEN_TREE_SIZE];
 extern int tokenTreeIndex;
 extern unsigned char strVars[4][32];
 extern int strVarsIndex;

@@ -171,6 +171,11 @@ int ast(unsigned char *tokenTree)
             }
         }
 
+        if(statementEnd == MAX_TOKEN_TREE_SIZE)
+        {
+            break;
+        }
+
         for(conditionalPos=tokenTreeIndex;conditionalPos<statementEnd;conditionalPos++)
         {
             if(tokenTree[conditionalPos] == 'B') // repeat
