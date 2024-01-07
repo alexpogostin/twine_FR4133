@@ -18,4 +18,12 @@ int *getIntVarNum(void);
 void setIntVarNum(int value);
 void incIntVarNum(void);
 
+int *getIntVarIndex(void);
+void setIntVarIndex(int value);
+void incIntVarIndex(void);
+
+int *getStrVarIndex(void);
+void setStrVarIndex(int value);
+void incStrVarIndex(void);
+
 #endif
