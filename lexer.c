@@ -22,9 +22,6 @@ unsigned char tokenTree[MAX_TOKEN_TREE_SIZE];
 unsigned char tokenTreeAst[MAX_TOKEN_TREE_SIZE];
 int tokenTreeIndex;
 
-int strVarsIndex;
-int intVarsIndex;
-
 #pragma PERSISTENT(token)
 
 /*****************************************************************************/
@@ -86,10 +83,10 @@ int lexer(unsigned char *program)
                 {
                     goto endOfLineReached;
                 }
-                intVars[intVarsIndex][i++] = *(p++);
+                intVars[*(getIntVarIndex())][i++] = *(p++);
             }
             p++;
-            intVarsIndex++;
+            incIntVarIndex();
             tokenTree[tokenTreeIndex++] = 'V';
             tokenTree[tokenTreeIndex++] = *(getIntVarNum());
             incIntVarNum();
@@ -107,10 +104,10 @@ int lexer(unsigned char *program)
                 {
                     goto endOfLineReached;
                 }
-                strVars[strVarsIndex][i++] = *(p++);
+                strVars[*(getStrVarIndex())][i++] = *(p++);
             }
             p++;
-            strVarsIndex++;
+            incStrVarIndex();
             tokenTree[tokenTreeIndex++] = 'X';
             tokenTree[tokenTreeIndex++] = *(getStrVarNum());
             incStrVarNum();
