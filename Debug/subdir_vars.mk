@@ -13,6 +13,7 @@ C_SRCS += \
 ../gpios.c \
 ../interpreter.c \
 ../interrupts.c \
+../lcd.c \
 ../lexer.c \
 ../main.c \
 ../power.c \
@@ -25,6 +26,7 @@ C_DEPS += \
 ./gpios.d \
 ./interpreter.d \
 ./interrupts.d \
+./lcd.d \
 ./lexer.d \
 ./main.d \
 ./power.d \
@@ -37,6 +39,7 @@ OBJS += \
 ./gpios.obj \
 ./interpreter.obj \
 ./interrupts.obj \
+./lcd.obj \
 ./lexer.obj \
 ./main.obj \
 ./power.obj \
@@ -49,6 +52,7 @@ OBJS__QUOTED += \
 "gpios.obj" \
 "interpreter.obj" \
 "interrupts.obj" \
+"lcd.obj" \
 "lexer.obj" \
 "main.obj" \
 "power.obj" \
@@ -61,6 +65,7 @@ C_DEPS__QUOTED += \
 "gpios.d" \
 "interpreter.d" \
 "interrupts.d" \
+"lcd.d" \
 "lexer.d" \
 "main.d" \
 "power.d" \
@@ -73,6 +78,7 @@ C_SRCS__QUOTED += \
 "../gpios.c" \
 "../interpreter.c" \
 "../interrupts.c" \
+"../lcd.c" \
 "../lexer.c" \
 "../main.c" \
 "../power.c" \
